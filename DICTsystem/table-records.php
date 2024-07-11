@@ -28,6 +28,10 @@
     ></script>
     <script src="main-script.js"></script>
     <style>
+      .offcanvas-body {
+        margin-bottom: 30px !important;
+      }
+
       .text-box{
 
         min-height:2em;
@@ -120,9 +124,11 @@
       }
       @media(min-width:1441px){
         .container{
-          max-width: 90%;
+          min-width: 90%;
         }
       }
+
+   
     </style>
 
   </head>
@@ -139,28 +145,31 @@
 
    
     <!-- All the Filters are applied here in the nav bar-->
-    <nav class="navbar bg-body-tertiary fixed-top">
+    <nav class="navbar bg-body-tertiary fixed-top ">
         <div class="container-fluid">
           <a class="navbar-brand" href="#"></a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasNavbar"
-            aria-controls="offcanvasNavbar"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
+            <div class = "d-flex align-items-start">
+              <h5 class="me-3 mb-0" id="offcanvasNavbarLabel">Filters</h5>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation"
+              >
+              
+              <i class="bi bi-funnel h3"></i>
+              </button>
+            </div>
           <div
             class="offcanvas offcanvas-end"
             tabindex="-1"
             id="offcanvasNavbar"
             aria-labelledby="offcanvasNavbarLabel"
           >
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Filters</h5>
-              <button type="button" class="btn btn-success mx-3" id="clearAllBtn">Clear All</button>
+            <div class="offcanvas-header mt-3">
+              <button type="button" class="btn btn-success" id="clearAllBtn">Clear All</button>
               <button
                 type="button"
                 class="btn-close"
@@ -170,13 +179,13 @@
             </div>
             <div class="offcanvas-body">
             <form id="nameFilterForm" action="" method="GET">
-              <div class="mb-4">
+              <div class="mb-3">
                 <span class="fw-bold space">Name</span>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch ms-3">
                   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDesc" name="sortName" value="desc" <?php echo isset($_GET['sortName']) && $_GET['sortName'] === 'desc' ? 'checked' : ''; ?>>
                   <label class="form-check-label" for="flexSwitchCheckDesc">Sort Name (Z to A) <i class="bi bi-arrow-down"></i></label>
                 </div>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch ms-3">
                   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckAsc" name="sortName" value="asc" <?php echo isset($_GET['sortName']) && $_GET['sortName'] === 'asc' ? 'checked' : ''; ?>>
                   <label class="form-check-label" for="flexSwitchCheckAsc">Sort Name (A to Z) <i class="bi bi-arrow-up"></i></label>
                 </div>
@@ -185,8 +194,8 @@
 
               <form id="idFilterForm" action="" method="GET">
                   <div class="mb-3">
-                    <span class="fw-bold space">ID</span>
-                    <div class="form-check form-switch">
+                    <span class="fw-bold space ms-1">ID</span>
+                    <div class="form-check form-switch ms-3">
                       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckOldest" name="sortID" value="oldest" <?php echo isset($_GET['sortID']) && $_GET['sortID'] === 'oldest' ? 'checked' : ''; ?>>
                       <label class="form-check-label" for="flexSwitchCheckOldest">Oldest ID <i class="bi bi-arrow-down"></i></label>
                     </div>
@@ -194,14 +203,14 @@
               </form>
 
             <span class = "d-block fw-bold space">Date of Examination</span>
-            <input class="text-box"  type="text" name="datefilter_examination" value="" autocomplete="off" />
+            <input class="text-box mb-3 border border-2 rounded"  type="text" name="datefilter_examination" value="" autocomplete="off" />
 
             <span class = "d-block fw-bold space">Date of Notification</span>
-            <input  class="text-box"  type="text" name="datefilter_notification" value="" autocomplete="off" />
+            <input  class="text-box border border-2 rounded"  type="text" name="datefilter_notification" value="" autocomplete="off" />
 
-            <span class= "d-block fw-bold space" >Status</span>
+            <span class= "d-block fw-bold space mt-3" >Status</span>
               <form id="statusForm">
-                  <div class="form-check">
+                  <div class="form-check ms-2 mb-3">
                       <input class="form-check-input" type="checkbox" value="Passed" id="flexCheckPassed" name="status[]"
                             <?php echo (isset($_GET['status']) && in_array('Passed', $_GET['status'])) ? 'checked' : ''; ?>>
                       <label class="form-check-label" for="flexCheckPassed">
@@ -209,7 +218,7 @@
                       </label>
                   </div>
 
-                  <div class="form-check">
+                  <div class="form-check ms-2 mb-3">
                       <input class="form-check-input" type="checkbox" value="Failed" id="flexCheckFailed" name="status[]"
                             <?php echo (isset($_GET['status']) && in_array('Failed', $_GET['status'])) ? 'checked' : ''; ?>>
                       <label class="form-check-label" for="flexCheckFailed">
@@ -217,7 +226,7 @@
                       </label>
                   </div>
 
-                  <div class="form-check">
+                  <div class="form-check ms-2 mb-3">
                       <input class="form-check-input" type="checkbox" value="Pending" id="flexCheckPending" name="status[]"
                             <?php echo (isset($_GET['status']) && in_array('Pending', $_GET['status'])) ? 'checked' : ''; ?>>
                       <label class="form-check-label" for="flexCheckPending">
@@ -235,6 +244,9 @@
                         <li><a class="dropdown-item">hall-a</a></li>
                         <li><a class="dropdown-item">hall-b</a></li>
                         <li><a class="dropdown-item">hall-c</a></li>
+                        <li><a class="dropdown-item">hall-d</a></li>
+                        <li><a class="dropdown-item">hall-e</a></li>
+                        <li><a class="dropdown-item">hall-f</a></li>
                     </ul>
                 </div>
 

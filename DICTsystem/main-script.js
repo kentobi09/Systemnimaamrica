@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
       examVenueDropdown.textContent = selectedVenue;
       const url = new URL(window.location.href);
       url.searchParams.set("exam_venue", selectedVenue);
-      window.location.href = url.toString(); // Changed this line
+      history.pushState({}, "", url.toString());
     });
   });
   // Gets the selected dropdown option
