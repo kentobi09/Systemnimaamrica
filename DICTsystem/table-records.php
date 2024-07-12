@@ -64,7 +64,7 @@
           z-index: 2;
         }
 
-        @media (min-width: 768px) {
+        @media (max-width: 1440px) {
           .delete-column {
             left: 0;
 
@@ -80,7 +80,7 @@
           }
         }
 
-        @media (max-width: 767px) and (max-width:1440px) {
+        @media (max-width: 767px) {
           .delete-column,
           .sticky-id,
           .sticky-name {
