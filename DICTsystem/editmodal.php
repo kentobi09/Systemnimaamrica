@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker-bs5.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Document</title>
 </head>
 <body>
@@ -50,7 +51,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" id="edit-contactNumber" name="edit-contactNumber" placeholder="Contact Number">
+                                <input type="tel" class="form-control" id="edit-contactNumber" name="edit-contactNumber" placeholder="Contact Number" pattern="\d{11}" title="Phone number must be 11 digits">
                             </div>
                             <div class="form-group">
                                 <input type="email" class="form-control" id="edit-emailAddress" name="edit-emailAddress" placeholder="Email Address">
@@ -91,17 +92,26 @@
                         <div class="col-md-6 section">
                             <h4 class="section-title"><b>Score Details</b></h4>
                             <div class="form-group">
+                            <span> <b>Diagnostic Exam Part 1</b></span>
                                 <input type="text" class="form-control" id="edit-exam1Score" name="edit-exam1Score" placeholder="Exam 1" required>
                             </div>
                             <div class="form-group">
+                            <span> <b>Diagnostic Exam Part 2</b></span>
                                 <input type="text" class="form-control" id="edit-exam2Score" name="edit-exam2Score" placeholder="Exam 2" required>
                             </div>
                             <div class="form-group">
+                            <span> <b>Diagnostic Exam Part 3</b></span>
                                 <input type="text" class="form-control" id="edit-exam3Score" name="edit-exam3Score" placeholder="Exam 3" required>
                             </div>
                             <div class="form-group">
+                            <span> <b>Diagnostic Exam Total Score </b></span>
                                 <input type="text" class="form-control" id="edit-totalScore" name="edit-totalScore" placeholder="Total Score" readonly required>
                             </div>
+                            <div class="form-group">
+                            <span> <b>Hands-on Exam</b></span>
+                                <input type="text" class="form-control" id="edit-hands-on" name="edit-hands-on" placeholder="Hands-on Score">
+                            </div>
+
                         </div>
                         
                         <!-- Attached File -->
@@ -133,19 +143,35 @@
 </html>
 
 <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    
-                    var notificationDatepicker = new Datepicker(document.getElementById('edit-notificationDate'), {
-                        format: 'yyyy-mm-dd', 
-                        autohide: true,
-                    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    var notificationDatepicker = new Datepicker(document.getElementById('edit-notificationDate'), {
+        format: 'yyyy-mm-dd', 
+        autohide: true,
+        minDate: new Date(2020, 0, 1), // January 1, 2020
+    });
 
-                    // Initialize datepicker for examination date
-                    var examDatepicker = new Datepicker(document.getElementById('edit-examDate'), {
-                        format: 'yyyy-mm-dd', 
-                        autohide: true,
-                    });
-                });
+    var examDatepicker = new Datepicker(document.getElementById('edit-examDate'), {
+        format: 'yyyy-mm-dd', 
+        autohide: true,
+        minDate: new Date(2020, 0, 1), // January 1, 2020
+    });
+}); 
+document.getElementById('edit-contactNumber').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+    document.getElementById('edit-exam1Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('edit-exam2Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('edit-exam3Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('edit-hands-on').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
 
     document.addEventListener('DOMContentLoaded', function () {
         var editButtons = document.querySelectorAll('.edit-applicant-btn');
@@ -261,8 +287,4 @@ var id = btn.getAttribute('data-id');
             // Set the applicant ID in the hidden input
             document.getElementById('edit-applicantID').value = id;
             
-
-
-
-
 </script>

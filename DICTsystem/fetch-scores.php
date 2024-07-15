@@ -21,7 +21,7 @@ $scores = array();
 while ($row_applicantID = $result_applicantIDs->fetch_assoc()) {
     $applicantID = $row_applicantID['applicantID'];
 
-    $sql_scores = "SELECT applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score 
+    $sql_scores = "SELECT applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score ,handson_score
                    FROM applicantscore 
                    WHERE applicantID = ?";
     
@@ -37,14 +37,15 @@ while ($row_applicantID = $result_applicantIDs->fetch_assoc()) {
         die('Error executing SQL query: ' . $stmt_scores->error);
     }
     
-    $stmt_scores->bind_result($score1, $score2, $score3, $total);
+    $stmt_scores->bind_result($score1, $score2, $score3, $total,$hands_on);
 
     while ($stmt_scores->fetch()) {
         $scores[$applicantID] = array(
             'score1' => $score1,
             'score2' => $score2,
             'score3' => $score3,
-            'total' => $total
+            'total' => $total,
+            'hands_on' => $hands_on
         );
     }
     $stmt_scores->close();

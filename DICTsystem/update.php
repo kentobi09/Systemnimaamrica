@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $exam2Score = $_POST['edit-exam2Score'];
     $exam3Score = $_POST['edit-exam3Score'];
     $totalScore = $_POST['edit-totalScore'];
+    $handsonScore = $_POST['edit-hands-on'];
 
     // Database connection
     $dsn = 'mysql:host=localhost;dbname=applicant-records';
@@ -84,7 +85,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                               applicant_score_part1 = :exam1Score,
                               applicant_score_part2 = :exam2Score,
                               applicant_score_part3 = :exam3Score,
-                              total_score = :totalScore
+                              total_score = :totalScore,
+                              handson_score = :handsonScore
                               WHERE applicantID = :applicantID";
 
         $stmtApplicantScore = $pdo->prepare($sqlApplicantScore);
@@ -92,7 +94,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmtApplicantScore->bindParam(':exam2Score', $exam2Score);
         $stmtApplicantScore->bindParam(':exam3Score', $exam3Score);
         $stmtApplicantScore->bindParam(':totalScore', $totalScore);
+        $stmtApplicantScore->bindParam(':handsonScore', $handsonScore);
         $stmtApplicantScore->bindParam(':applicantID', $applicantID);
+
 
         // Execute update for applicantscore table
         $stmtApplicantScore->execute();

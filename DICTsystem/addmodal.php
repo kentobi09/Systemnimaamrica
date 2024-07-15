@@ -66,7 +66,8 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Contact Number">
+                                    <input type="tel" class="form-control" id="contact_number" name="contact_number" placeholder="Contact Number" pattern="\d{11}" title="Phone number must be 11 digits">
+
                                     </div>
                                     <div class="form-group">
                                         <input type="email" class="form-control" id="email_address" name="email_address" placeholder="Email Address">
@@ -109,17 +110,21 @@
                                 <div class="col-md-6 section">
                                     <h4 class="section-title"><b>Score Details</b></h4>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="exam1Score" name="exam1Score" placeholder="Exam 1" oninput="calculateTotal()">
+                                        <input type="text" class="form-control" id="exam1Score" name="exam1Score" placeholder="Diagnostic Exam 1" oninput="calculateTotal()" required>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="exam2Score" name="exam2Score" placeholder="Exam 2" oninput="calculateTotal()">
+                                        <input type="text" class="form-control" id="exam2Score" name="exam2Score" placeholder="Diagnostic Exam 2" oninput="calculateTotal()" required>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="exam3Score" name="exam3Score" placeholder="Exam 3" oninput="calculateTotal()">
+                                        <input type="text" class="form-control" id="exam3Score" name="exam3Score" placeholder="Diagnostic Exam 3" oninput="calculateTotal()" required>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="totalScore" name="totalScore" placeholder="Total : " readonly>
+                                        <input type="text" class="form-control" id="totalScore" name="totalScore" placeholder="Diagnostic Exam Total : " readonly>
                                     </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="hands-onScore" name="hands-onScore" placeholder="Hands-on Exam (optional)">
+                                    </div>
+
                                 </div>
                                 <!-- Attached File -->
                                 <div class="col-md-6 section">
@@ -147,19 +152,7 @@
 
 
         <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                    
-                    var notificationDatepicker = new Datepicker(document.getElementById('notificationDate'), {
-                        format: 'yyyy-mm-dd', 
-                        autohide: true,
-                    });
 
-                    // Initialize datepicker for examination date
-                    var examDatepicker = new Datepicker(document.getElementById('examDate'), {
-                        format: 'yyyy-mm-dd', 
-                        autohide: true,
-                    });
-                });
 
 
                 function calculateTotal() {
@@ -232,7 +225,40 @@
                 // Close the modal
                 $('#applicantModal').modal('hide');
             }
+            
         </script>
 </body>
 
 </html>
+
+<script>
+document.getElementById('contact_number').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('exam1Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('exam2Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('exam3Score').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+document.getElementById('hands-onScore').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // Replace non-digit characters with an empty string
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var notificationDatepicker = new Datepicker(document.getElementById('notificationDate'), {
+        format: 'yyyy-mm-dd', 
+        autohide: true,
+        minDate: new Date(2020, 0, 1), // January 1, 2020
+    });
+
+    var examDatepicker = new Datepicker(document.getElementById('examDate'), {
+        format: 'yyyy-mm-dd', 
+        autohide: true,
+        minDate: new Date(2020, 0, 1), // January 1, 2020
+    });
+}); 
+</script>

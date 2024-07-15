@@ -371,6 +371,7 @@
                         <td class="score applicant-score2 hide"><?= htmlspecialchars($score['score2']) ?></td>
                         <td class="score applicant-score3 hide"><?= htmlspecialchars($score['score3']) ?></td>
                         <td class="score total-score hide" ><?= htmlspecialchars($score['total']) ?></td>
+                        <td class="score handson hide" ><?= htmlspecialchars($score['hands_on']) ?></td>
                     <?php else: ?>
                         <td colspan="4">No scores found</td>
                     <?php endif; ?>
