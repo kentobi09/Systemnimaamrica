@@ -343,6 +343,7 @@
                                         data-score2="<?php echo htmlspecialchars($score['score2']); ?>"
                                         data-score3="<?php echo htmlspecialchars($score['score3']); ?>"
                                         data-total="<?php echo htmlspecialchars($score['total']); ?>"
+                                        data-handson="<?php echo htmlspecialchars($score['hands_on']); ?>"
                                     <?php else: ?>
                                         data-score1=""
                                         data-score2=""

@@ -226,6 +226,7 @@ document.getElementById('edit-hands-on').addEventListener('input', function (e) 
             var score2 = btn.getAttribute('data-score2');
             var score3 = btn.getAttribute('data-score3');
             var totalScore = btn.getAttribute('data-total');
+            var handson = btn.getAttribute('data-handson');
             var hasApplicationForm = btn.getAttribute('data-application-form') === 'true';
 
             // Populate modal fields with data
@@ -247,7 +248,7 @@ document.getElementById('edit-hands-on').addEventListener('input', function (e) 
             document.getElementById('edit-exam2Score').value = score2;
             document.getElementById('edit-exam3Score').value = score3;
             document.getElementById('edit-totalScore').value = totalScore;
-
+            document.getElementById('edit-hands-on').value = handson;
             // Handle application form display or processing (e.g., displaying a link)
             var applicationFormIframe = document.getElementById('edit-applicationFormIframe');
             if (hasApplicationForm) {
