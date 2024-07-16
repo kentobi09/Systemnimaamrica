@@ -9,7 +9,7 @@ if (isset($_GET['alert']) && $_GET['alert'] === 'session_conflict') {
 try {
     $conn = new PDO("mysql:host=localhost;dbname=applicant-records", "root", "");
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+} catch(PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
     exit();
 }
@@ -80,7 +80,6 @@ if (isset($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +96,6 @@ if (isset($_SESSION['user_id'])) {
             min-height: 100vh;
             margin: 0;
         }
-
         .login-container {
             background-color: white;
             border-radius: 15px;
@@ -107,23 +105,19 @@ if (isset($_SESSION['user_id'])) {
             max-width: 1100px;
             min-height: fit-content;
         }
-
         .login-form {
             padding: 40px;
         }
-
         .login-title {
             color: #333;
             margin-bottom: 30px;
             font-size: 2.5rem;
         }
-
         .form-control {
             border-radius: 8px;
             font-size: 1.1rem;
             padding: 12px;
         }
-
         .btn-login {
             background-color: #3498db;
             border: none;
@@ -131,13 +125,11 @@ if (isset($_SESSION['user_id'])) {
             font-size: 1.2rem;
             padding: 12px;
         }
-
         .login-image {
             max-width: 100%;
             height: auto;
             max-height: 500px;
         }
-
         .illustration-container {
             background-color: #f8f9fa;
             padding: 40px;
@@ -147,16 +139,12 @@ if (isset($_SESSION['user_id'])) {
             align-items: center;
             height: 100%;
         }
-
         .form-label {
             font-size: 1.1rem;
         }
-
-        .form-check-label,
-        .form-check-input {
+        .form-check-label, .form-check-input {
             font-size: 1rem;
         }
-
         .input-group-text {
             font-size: 1.1rem;
         }
@@ -165,30 +153,24 @@ if (isset($_SESSION['user_id'])) {
             .login-container {
                 min-height: auto;
             }
-
             .illustration-container {
                 order: -1;
                 padding: 20px;
             }
-
             .login-image {
                 max-height: 300px;
             }
-
             .login-form {
                 padding: 20px;
             }
-
             .login-title {
                 font-size: 2rem;
                 text-align: center;
             }
-
             .form-control {
                 font-size: 1rem;
                 padding: 10px;
             }
-
             .btn-login {
                 font-size: 1rem;
                 padding: 10px;
@@ -196,7 +178,6 @@ if (isset($_SESSION['user_id'])) {
         }
     </style>
 </head>
-
 <body>
     <div class="login-container">
         <div class="row g-0 h-100">
@@ -210,28 +191,25 @@ if (isset($_SESSION['user_id'])) {
                     <h2 class="login-title">ICT Proficiency Certification Examination</h2>
                     <form method="POST" action="">
                         <?php if ($error): ?>
-                            <div class="alert alert-danger" role="alert">
-                                <?php echo $error; ?>
-                            </div>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $error; ?>
+                        </div>
                         <?php endif; ?>
                         <div class="mb-4">
                             <label for="form3Example3" class="form-label">Email</label>
-                            <input type="text" name="name" id="form3Example3" class="form-control"
-                                value="<?php echo htmlspecialchars($name); ?>">
+                            <input type="text" name="name" id="form3Example3" class="form-control"  value="<?php echo htmlspecialchars($name); ?>">
                         </div>
                         <div class="mb-4">
                             <label for="form3Example4" class="form-label">Password</label>
                             <div class="input-group">
-                                <input type="password" name="password" id="form3Example4" class="form-control"
-                                    value="<?php echo htmlspecialchars($password); ?>">
+                                <input type="password" name="password" id="form3Example4" class="form-control" value="<?php echo htmlspecialchars($password); ?>">
                                 <span class="input-group-text">
                                     <i id="togglePassword" class="fa-solid fa-eye-slash"></i>
                                 </span>
                             </div>
                         </div>
 
-                        <button type="submit" id="loginButton" class="btn btn-primary btn-login mb-4"
-                            disabled>Login</button>
+                        <button type="submit" id="loginButton" class="btn btn-primary btn-login mb-4" disabled>Login</button>
 
                     </form>
                 </div>
@@ -241,48 +219,48 @@ if (isset($_SESSION['user_id'])) {
 
 
 
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/dc21b4aa01.js" crossorigin="anonymous"></script>
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/dc21b4aa01.js" crossorigin="anonymous"></script>
 
-    <script>
-        // Function to toggle password visibility
-        document.addEventListener('DOMContentLoaded', function () {
-            const passwordInput = document.getElementById('form3Example4');
-            const togglePassword = document.getElementById('togglePassword');
-            const loginButton = document.getElementById('loginButton');
+<script>
+    // Function to toggle password visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('form3Example4');
+        const togglePassword = document.getElementById('togglePassword');
+        const loginButton = document.getElementById('loginButton');
 
-            togglePassword.addEventListener('click', function () {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
 
-                // Toggle eye icon
-                togglePassword.classList.toggle('fa-eye');
-                togglePassword.classList.toggle('fa-eye-slash');
-            });
-
-            // Function to check if both fields are filled and enable/disable the login button
-            function checkInputs() {
-                const nameValue = document.getElementById('form3Example3').value.trim();
-                const passwordValue = passwordInput.value.trim();
-
-                if (nameValue !== '' && passwordValue !== '') {
-                    loginButton.removeAttribute('disabled');
-                } else {
-                    loginButton.setAttribute('disabled', 'true');
-                }
-            }
-
-            // Event listeners for input fields
-            document.getElementById('form3Example3').addEventListener('input', checkInputs);
-            passwordInput.addEventListener('input', checkInputs);
-
-            // Clear input fields if error message is displayed
-            <?php if ($error): ?>
-                document.getElementById('form3Example3').value = '';
-                document.getElementById('form3Example4').value = '';
-            <?php endif; ?>
+            // Toggle eye icon
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
         });
-    </script>
+
+        // Function to check if both fields are filled and enable/disable the login button
+        function checkInputs() {
+            const nameValue = document.getElementById('form3Example3').value.trim();
+            const passwordValue = passwordInput.value.trim();
+
+            if (nameValue !== '' && passwordValue !== '') {
+                loginButton.removeAttribute('disabled');
+            } else {
+                loginButton.setAttribute('disabled', 'true');
+            }
+        }
+
+        // Event listeners for input fields
+        document.getElementById('form3Example3').addEventListener('input', checkInputs);
+        passwordInput.addEventListener('input', checkInputs);
+
+        // Clear input fields if error message is displayed
+        <?php if ($error): ?>
+        document.getElementById('form3Example3').value = '';
+        document.getElementById('form3Example4').value = '';
+        <?php endif; ?>
+    });
+</script>
 
 </body>
 

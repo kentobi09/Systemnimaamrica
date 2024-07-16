@@ -34,7 +34,6 @@ if (isset($_GET['status']) && !empty($_GET['status'])) {
     $conditions[] = $statusCondition;
 }
 
-
 if (isset($_GET['exam_venue']) && !empty($_GET['exam_venue'])) {
     $exam_venue = mysqli_real_escape_string($connection, $_GET['exam_venue']);
     $conditions[] = "exam_venue = '$exam_venue'";
@@ -71,13 +70,30 @@ $total_records = $total_records_row['total'];
 
 $total_pages = ceil($total_records / $limit);
 
-
 if ($page < 1) {
     $page = 1;
 } elseif ($page > $total_pages) {
     $page = $total_pages;
 }
 
+// Clone the main query for counting
+$countQuery = $query;
+
+// Remove any existing ORDER BY clause from the count query
+$countQuery = preg_replace('/ORDER BY.*$/i', '', $countQuery);
+
+// Add the counting logic
+$countQuery = "SELECT 
+    SUM(CASE WHEN status = 'Passed' THEN 1 ELSE 0 END) as passed_count,
+    SUM(CASE WHEN status = 'Failed' THEN 1 ELSE 0 END) as failed_count,
+    SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending_count
+FROM ($countQuery) as subquery";
+
+// Execute the count query
+$countResult = mysqli_query($connection, $countQuery);
+$statusCounts = mysqli_fetch_assoc($countResult);
+
+// Continue with the original query
 $query .= " ORDER BY " . implode(', ', $orderByClause);
 $query .= " LIMIT $limit OFFSET $offset";
 
@@ -90,3 +106,13 @@ if ($result) {
 }
 
 mysqli_close($connection);
+
+// Now $statusCounts contains the counts you need
+// You can use it in your PHP code or pass it to JavaScript
+?>
+
+<!-- Example of how to pass the counts to JavaScript -->
+<script>
+var statusCounts = <?php echo json_encode($statusCounts); ?>;
+console.log('Status Counts:', statusCounts);
+</script>
