@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker-bs5.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Document</title>
+    <style>
+        .exam-subtitle {
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-block: 15px;
+        }
+    </style>
 </head>
 <body>
 <!-- Edit Modal -->
@@ -92,23 +99,23 @@
                         <div class="col-md-6 section">
                             <h4 class="section-title"><b>Score Details</b></h4>
                             <div class="form-group">
-                            <span> <b>Diagnostic Exam Part 1</b></span>
+                            <p class= "exam-subtitle"> Diagnostic Exam Part 1 </p>
                                 <input type="text" class="form-control" id="edit-exam1Score" name="edit-exam1Score" placeholder="Exam 1" required>
                             </div>
                             <div class="form-group">
-                            <span> <b>Diagnostic Exam Part 2</b></span>
+                             <p class= "exam-subtitle"> Diagnostic Exam Part 2 </p>
                                 <input type="text" class="form-control" id="edit-exam2Score" name="edit-exam2Score" placeholder="Exam 2" required>
                             </div>
                             <div class="form-group">
-                            <span> <b>Diagnostic Exam Part 3</b></span>
+                             <p class= "exam-subtitle"> Diagnostic Exam Part 3 </p>
                                 <input type="text" class="form-control" id="edit-exam3Score" name="edit-exam3Score" placeholder="Exam 3" required>
                             </div>
                             <div class="form-group">
-                            <span> <b>Diagnostic Exam Total Score </b></span>
+                             <p class= "exam-subtitle"> Total Score </p>
                                 <input type="text" class="form-control" id="edit-totalScore" name="edit-totalScore" placeholder="Total Score" readonly required>
                             </div>
                             <div class="form-group">
-                            <span> <b>Hands-on Exam</b></span>
+                            <p class= "exam-subtitle"> Hands-on Score </p>
                                 <input type="text" class="form-control" id="edit-hands-on" name="edit-hands-on" placeholder="Hands-on Score">
                             </div>
 
