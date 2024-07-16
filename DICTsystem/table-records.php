@@ -26,6 +26,19 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+      <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet" />
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+    ></script>
     <script src="main-script.js"></script>
     <style>
       .offcanvas-body {
@@ -132,21 +145,93 @@
     </style>
 
   </head>
-  <body>
+ <body id="page-top">
+    <!-- Page Wrapper -->
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+       <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
+                <div class="sidebar-brand-text mx-3">
+                    <img src="image/DICT-logo.png" alt="DICTlogo" style="max-width: 4rem; min-width: 5px" />
+                </div>
+            </a>
 
-    <?php include_once('first-connection.php'); ?>
-    <?php include('fetch-scores.php');?>
-    <?php include('filter-search.php');?>
-    <?php include('addmodal.php'); ?>
-    <?php include('dispaymodal.php'); ?>
-    <?php include('editmodal.php'); ?>
-    <?php include('deletemodal.php'); ?>
-    <?php include('insert.php');?>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <span>Admin</span></a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Logout
+                    </a>
+                </div>
+            </li>
+
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0" />
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item ">
+        <a class="nav-link" href="index.php">
+          <span>Dashboard</span></a>
+      </li>
+
+      <!-- Nav Item - Charts -->
+      <li class="nav-item">
+        <a class="nav-link" href="table-history.php">
+          <span>History</span></a>
+      </li>
+
+      <!-- Nav Item - Tables -->
+      <li class="nav-item active">
+        <a class="nav-link" href="table-records.php">
+          <span>Tables</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block" />
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <!-- Main Content -->
+
+      <!-- Scroll to Top Button-->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>
+    
+<?php
+
+
+?>
+    <?php include_once ('first-connection.php'); ?>
+    <?php include ('fetch-scores.php'); ?>
+    <?php include ('filter-search.php'); ?>
+    <?php include ('addmodal.php'); ?>
+    <?php include ('dispaymodal.php'); ?>
+    <?php include ('editmodal.php'); ?>
+    <?php include ('deletemodal.php'); ?>
+    <?php include ('insert.php'); ?>
 
    
-    <!-- All the Filters are applied here in the nav bar-->
-    <nav class="navbar bg-body-tertiary fixed-top ">
+     <!-- All the Filters are applied here in the nav bar-->
+    <nav class="navbar topbar mb-2 static-top">
         <div class="container-fluid">
+           <h1>Applicant Records</h1>
           <a class="navbar-brand" href="#"></a>
             <div class = "d-flex align-items-start">
               <h5 class="me-3 mb-0" id="offcanvasNavbarLabel">Filters</h5>
@@ -256,9 +341,6 @@
         </div>
       </nav>
 
-    <div class="container px-0" id="header">
-      <h1>Applicant Records</h1>
-    </div>
     <div class="container my-3 px-0">
       <div class="d-flex justify-content-between my-4">
         <form class="d-flex" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="GET">
@@ -415,5 +497,9 @@
           </ul>
         </nav>
     </div>
+      <script src="vendor/jquery/jquery.min.js"></script>
+      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+      <script src="js/sb-admin-2.min.js"></script>              
   </body>
 </html>
