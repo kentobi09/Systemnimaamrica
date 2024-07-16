@@ -10,18 +10,78 @@
 
   <title>Dashboard</title>
 
-  <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+  
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+</head>
+
+<!-- ... body content ... -->
+
+<!-- At the end of the body, replace the existing scripts with: -->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="js/sb-admin-2.min.js"></script>
+<script src="vendor/chart.js/Chart.min.js"></script>
+<script src="js/demo/chart-area-demo.js"></script>
+<script src="js/demo/chart-pie-demo.js"></script>
+<script>
+  $(document).ready(function() {
+    // Initialize date pickers
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      autoclose: true
+    });
+
+    $('#resultTabs a').on('click', function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+
+    // Update content when switching to Hands-On Results tab
+    $('#hands-on-tab').on('shown.bs.tab', function (e) {
+      $('#hands-on-results .card:eq(1) .h5').text('<?php echo htmlspecialchars($passed_handson_count); ?>');
+      // Update other values as needed
+    });
+
+    $('#dateRangeForm').on('submit', function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: 'fetch-dashboard.php',
+        method: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          updateDashboard(response);
+        },
+        error: function(xhr, status, error) {
+          console.error("An error occurred: " + error);
+        }
+      });
+    });
+  });
+
+  function updateDashboard(data) {
+    // Update the dashboard elements
+    $('#diagnostic-results .card:eq(0) .h5').text(data.total_count);
+    $('#diagnostic-results .card:eq(1) .h5').text(data.passed_count);
+    $('#diagnostic-results .card:eq(2) .h5').text(data.failed_count);
+    $('#diagnostic-results .card:eq(3) .h5').text(data.pending_count);
+
+    $('#hands-on-results .card:eq(0) .h5').text(data.total_count);
+    $('#hands-on-results .card:eq(1) .h5').html(data.passed_handson_count);
+    $('#hands-on-results .card:eq(2) .h5').text(data.failed_handson_count);
+    $('#hands-on-results .card:eq(3) .h5').text(data.pending_handson_count);
+  }
+</script>
 
 </head>
 
 <body id="page-top">
+  <?php include('fetch-dashboard.php');?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
@@ -29,7 +89,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
         <div class="sidebar-brand-text mx-3">
-          <img src="image/DICT-logo.png" alt="DICTlogo" style="max-width: 4rem; min-width: 5px" />
+          <img src="image/DICT-logo.png" alt="DICTlogo" style="max-width: 4rem; min-width: 1rem" />
         </div>
       </a>
 
@@ -85,106 +145,210 @@
         <!-- Topbar -->
         <nav class="navbar bg-body-tertiary topbar mb-2 static-top">
           <div class="container-fluid">
-            <h1 class="dashboard-title">Dashboard</h1>
+            <h1 class="dashboard-title">Hello Admin</h1>
             <a class="navbar-brand" href="#"></a>
+              <form id="dateRangeForm" method="POST">
+                  <div class="input-group mb-3">
+                      <input type="text" class="form-control datepicker" id="start_date" name="start_date" placeholder="Start Date" readonly>
+                      <input type="text" class="form-control datepicker" id="end_date" name="end_date" placeholder="End Date" readonly>
+                      <button class="btn btn-primary" type="submit">Apply Filter</button>
+                  </div>
+              </form>
           </div>
         </nav>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
-          <!-- Content Row -->
-          <div class="row">
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Earnings (Monthly)
-                      </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        $40,000
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                        Earnings (Annual)
-                      </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        $215,000
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                        Tasks
-                      </div>
-                      <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                            50%
-                          </div>
+
+        <ul class="nav nav-tabs" id="resultTabs">
+          <li class="nav-item">
+            <a class="nav-link active" id="diagnostic-tab" data-bs-toggle="tab" href="#diagnostic-results">Diagnostic Results</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="hands-on-tab" data-bs-toggle="tab" href="#hands-on-results">Hands-On Results</a>
+          </li>
+        </ul>
+
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="diagnostic-results" role="tabpanel" aria-labelledby="diagnostic-tab">
+              <div class = "row">
+                    <!--Total Applicants -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Applicants
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <?php echo $total_count; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col">
-                          <div class="progress progress-sm mr-2">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50"
-                              aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+
+                  <!-- Passed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-success shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                          Passed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($passed_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
                           </div>
-                        </div>
                       </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <!-- Pending Requests Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                        Pending Requests
+
+                  <!-- Failed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-danger shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                          Failed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($failed_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        18
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-comments fa-2x text-gray-300"></i>
-                    </div>
                   </div>
-                </div>
+
+                  <!-- Pending Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-warning shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                          Pending Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($pending_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
               </div>
-            </div>
           </div>
+          <div class="tab-pane fade" id="hands-on-results" role="tabpanel" aria-labelledby="hands-on-tab">
+              <div class = "row">
+                  <!--Total Applicants -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Applicants
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <?php echo $total_count; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                  <!-- Passed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-success shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                          Passed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($passed_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+
+                  <!-- Failed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-danger shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                          Failed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($failed_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Pending Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-warning shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                          Pending Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($pending_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
           <!-- Content Row -->
           <div class="row">
             <!-- Area Chart -->
@@ -275,21 +439,7 @@
 
     <?php include ('logoutmodal.php'); ?>
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
 </body>
 
 </html>
