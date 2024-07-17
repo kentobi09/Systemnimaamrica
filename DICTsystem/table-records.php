@@ -440,7 +440,7 @@
                     <td class="sticky-id applicant-id" ><?= htmlspecialchars($applicant['applicantID']) ?></td>
                     <td class="sticky-name applicant-name">
                       <?php ?>
-                        <?= htmlspecialchars($applicant['firstname'].' '.$applicant['middlename'][0].'. '.$applicant['lastname']) ?>
+                          <?= htmlspecialchars($applicant['firstname'] . ' ' . strtoupper($applicant['middlename'][0]) . '. ' . $applicant['lastname']) ?>
                     </td>
                     <td class= "applicant-sex"              ><?= htmlspecialchars($applicant['sex']) ?></td>
                     <td class= "applicant-province"         ><?= htmlspecialchars($applicant['province']) ?></td>
@@ -496,10 +496,6 @@
             </li>
           </ul>
         </nav>
-    </div>
-      <script src="vendor/jquery/jquery.min.js"></script>
-      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-      <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-      <script src="js/sb-admin-2.min.js"></script>              
+    </div>       
   </body>
 </html>

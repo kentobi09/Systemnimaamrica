@@ -1,3 +1,10 @@
+  <?php include('fetch-dashboard.php');
+  include('display-bar.php');
+  $initial_passed = isset($passed_count) ? $passed_count : 0;
+  $initial_failed = isset($failed_count) ? $failed_count : 0;
+  $initial_pending = isset($pending_count) ? $pending_count : 0;
+  ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,16 +15,410 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
+
   <title>Dashboard</title>
 
-  <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="js/sb-admin-2.min.js"></script>
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+  <!-- JS for Pie Chart & FIlter Function-->
+  <script>
 
-  <!-- Custom styles for this template-->
-  <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+        var initialData = {
+          passed: <?php echo json_encode($passed_count); ?>,
+          failed: <?php echo json_encode($failed_count); ?>,
+          pending: <?php echo json_encode($pending_count); ?>
+        };
+
+        window.dashboardData = {
+          passed_count: <?php echo json_encode($passed_count); ?>,
+          failed_count: <?php echo json_encode($failed_count); ?>,
+          pending_count: <?php echo json_encode($pending_count); ?>,
+          passed_handson_count: <?php echo json_encode($passed_handson_count); ?>,
+          failed_handson_count: <?php echo json_encode($failed_handson_count); ?>,
+          pending_handson_count: <?php echo json_encode($pending_handson_count); ?>,
+          total_count: <?php echo json_encode($total_count); ?>
+        };
+        
+        
+        $(document).ready(function() {
+            
+          $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+          });
+
+          
+          $('#resultTabs a').on('click', function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+          });
+
+          
+          $('#resultTabs a').on('shown.bs.tab', function(e) {
+            var activeTabId = $(e.target).attr('id');
+            updateCardsByTab(activeTabId);
+            updatePieChartByTab(activeTabId);
+          });
+
+          
+          $('#dateRangeForm').on('submit', function(e) {
+              e.preventDefault();
+              $.ajax({
+                  url: 'fetch-dashboard.php',
+                  method: 'POST',
+                  data: $(this).serialize(),
+                  dataType: 'json',
+                  success: function(response) {
+                      console.log(response); 
+                      updateDashboard(response);
+                      updatePieChartByTab($('#resultTabs .active').attr('id'));
+                  },
+                  error: function(xhr, status, error) {
+                      console.error("An error occurred: " + error);
+                  }
+              });
+         });
+
+        $('#clearFilter').on('click', function() {
+        // Clear the date inputs
+        $('#start_date').val('');
+        $('#end_date').val('');
+        
+        // Reset the dashboard data
+        $.ajax({
+            url: 'fetch-dashboard.php',
+            method: 'POST',
+            data: { clear_filter: true },
+            dataType: 'json',
+            success: function(response) {
+                updateDashboard(response);
+                updatePieChartByTab($('#resultTabs .active').attr('id'));
+            },
+            error: function(xhr, status, error) {
+                console.error("An error occurred: " + error);
+            }
+        });
+    });
+
+        function updateDashboard(data) {
+        // Update total applicants
+        $('.card:eq(0) .h5').text(data.total_count);
+
+        // Update diagnostic test results
+        $('#diagnostic-results .card:eq(1) .h5').text(data.passed_count);
+        $('#diagnostic-results .card:eq(2) .h5').text(data.failed_count);
+        $('#diagnostic-results .card:eq(3) .h5').text(data.pending_count);
+
+        // Update hands-on test results
+        $('#hands-on-results .card:eq(1) .h5').text(data.passed_handson_count);
+        $('#hands-on-results .card:eq(2) .h5').text(data.failed_handson_count);
+        $('#hands-on-results .card:eq(3) .h5').text(data.pending_handson_count);
+
+        // Update pie chart data
+        window.dashboardData = data;
+    }
+
+          var ctx = document.getElementById("myPieChart");
+          if (ctx) {
+            window.myPieChart = new Chart(ctx, {
+              type: 'pie',
+              data: {
+                labels: ["Passed", "Failed", "Pending"],
+                datasets: [{
+                  data: [<?php echo $passed_count; ?>, <?php echo $failed_count; ?>, <?php echo $pending_count; ?>],
+                  backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e'],
+                  hoverBackgroundColor: ['#17a673', '#c23616', '#dda20a'],
+                  hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+              },
+              options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                  enabled: false
+                },
+                legend: {
+                  display: false
+                },
+                plugins: {
+                  datalabels: {
+                    formatter: (value, ctx) => {
+                      let sum = 0;
+                      let dataArr = ctx.chart.data.datasets[0].data;
+                      dataArr.map(data => {
+                        sum += data;
+                      });
+                      let percentage = (value*100 / sum).toFixed(1)+"%";
+                      return percentage;
+                    },
+                    color: '#fff',
+                    font: {
+                      weight: 'bold',
+                      size: 12,
+                    }
+                  }
+                }
+              },
+            });
+            console.log("Chart initialized with data:", [<?php echo $passed_count; ?>, <?php echo $failed_count; ?>, <?php echo $pending_count; ?>]);
+          } else {
+            console.error("Canvas element 'myPieChart' not found");
+          }
+
+          var initialPassed = <?php echo json_encode($initial_passed); ?>;
+          var initialFailed = <?php echo json_encode($initial_failed); ?>;
+          var initialPending = <?php echo json_encode($initial_pending); ?>;
+          updatePieChart(<?php echo $initial_passed; ?>, <?php echo $initial_failed; ?>, <?php echo $initial_pending; ?>);
+          updatePieChartByTab($('#resultTabs .active').attr('id'));
+          logDashboardData();
+        });
+
+
+        function updateDashboard(data) {
+          window.dashboardData = data;
+          var activeTabId = $('#resultTabs .active').attr('id');
+          updateCardsByTab(activeTabId);
+          updatePieChartByTab(activeTabId);
+        }
+        function updateCardsByTab(activeTabId) {
+          if (!window.dashboardData) return;
+
+          var data = window.dashboardData;
+          var totalCount = data.total_count;
+
+          if (activeTabId === 'diagnostic-tab') {
+            updateCards('diagnostic-results', totalCount, data.passed_count, data.failed_count, data.pending_count);
+            updatePieChart(data.passed_count, data.failed_count, data.pending_count);
+          } else if (activeTabId === 'hands-on-tab') {
+            updateCards('hands-on-results', totalCount, data.passed_handson_count, data.failed_handson_count, data.pending_handson_count);
+            updatePieChart(data.passed_handson_count, data.failed_handson_count, data.pending_handson_count);
+          }
+        }
+
+        function updateCards(containerId, total, passed, failed, pending) {
+          var container = $('#' + containerId);
+          container.find('.card:eq(0) .h5').text(total);
+          container.find('.card:eq(1) .h5').text(passed);
+          container.find('.card:eq(2) .h5').text(failed);
+          container.find('.card:eq(3) .h5').text(pending);
+        }
+
+        function updatePieChart(passed, failed, pending) {
+          if (window.myPieChart) {
+            console.log("Updating pie chart with raw data:", [passed, failed, pending]);
+            
+            
+            passed = Number(passed) || 0;
+            failed = Number(failed) || 0;
+            pending = Number(pending) || 0;
+
+          
+            var total = passed + failed + pending;
+            
+            if (total === 0) {
+              console.warn("Total is zero, cannot calculate percentages");
+              return;
+            }
+
+            
+            window.myPieChart.data.datasets[0].data = [passed, failed, pending];
+            window.myPieChart.options.plugins.datalabels.formatter = (value, ctx) => {
+              let sum = 0;
+              let dataArr = ctx.chart.data.datasets[0].data;
+              dataArr.map(data => {
+                sum += data;
+              });
+              let percentage = ((value / sum) * 100).toFixed(1) + "%";
+              return percentage;
+            };
+            window.myPieChart.update();
+
+            
+            updateLegend(passed, failed, pending);
+
+            console.log("Updated pie chart with data:", [passed, failed, pending]);
+          } else {
+            console.error("Pie chart not initialized");
+          }
+        }
+
+        function updatePieChartByTab(activeTabId) {
+          if (!window.dashboardData) return;
+
+          var data = window.dashboardData;
+
+          if (activeTabId === 'diagnostic-tab') {
+            updatePieChart(data.passed_count, data.failed_count, data.pending_count);
+          } else if (activeTabId === 'hands-on-tab') {
+            updatePieChart(data.passed_handson_count, data.failed_handson_count, data.pending_handson_count);
+          }
+        }
+        
+        function updateLegend(passed, failed, pending) {
+          var total = passed + failed + pending;
+          if (total === 0) {
+            $('#passed-legend').text('Passed (0%)');
+            $('#failed-legend').text('Failed (0%)');
+            $('#pending-legend').text('Pending (0%)');
+            return;
+          }
+          
+          var passedPercentage = ((passed / total) * 100).toFixed(1);
+          var failedPercentage = ((failed / total) * 100).toFixed(1);
+          var pendingPercentage = ((pending / total) * 100).toFixed(1);
+
+          $('#passed-legend').text('Passed (' + passedPercentage + '%)');
+          $('#failed-legend').text('Failed (' + failedPercentage + '%)');
+          $('#pending-legend').text('Pending (' + pendingPercentage + '%)');
+        }
+
+        function logDashboardData() {
+        console.log("Current dashboard data:", window.dashboardData);
+        }
+ 
+  </script>
+  <!-- JS for Bar Chart-->
+ <script>
+      var barChartData = <?php echo $json_data; ?>;
+      console.log("Bar Chart Data:", barChartData);
+
+      document.addEventListener('DOMContentLoaded', function() {
+          var ctx = document.getElementById("myBarChart");
+          
+          if (!ctx) {
+              console.error("Canvas element 'myBarChart' not found!");
+              return;
+          }
+          
+          ctx = ctx.getContext('2d');
+          var myBarChart;
+
+          function createInitialBarChart(data) {
+              if (!Array.isArray(data) || data.length === 0) {
+                  console.error("Invalid or empty data received:", data);
+                  return;
+              }
+
+              // Calculate total passers
+              var totalPassers = data.reduce((sum, item) => sum + (parseInt(item.passer_count) || 0), 0);
+
+              var initialData = {
+                  labels: data.map(item => item.province),
+                  datasets: [{
+                      label: "Passers (%)",
+                      backgroundColor: 'rgba(54, 162, 235, 0.8)', // All bars in blue
+                      borderColor: 'rgba(54, 162, 235, 1)',
+                      borderWidth: 1,
+                      data: data.map(item => {
+                          var passerCount = parseInt(item.passer_count) || 0;
+                          return ((passerCount / totalPassers) * 100).toFixed(2);
+                      }),
+                  }]
+              };
+
+              try {
+                  myBarChart = new Chart(ctx, {
+                      type: 'bar',
+                      data: initialData,
+                      options: {
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          layout: {
+                              padding: {
+                                  left: 10,
+                                  right: 25,
+                                  top: 25,
+                                  bottom: 0
+                              }
+                          },
+                          scales: {
+                              xAxes: [{
+                                  gridLines: {
+                                      display: false,
+                                      drawBorder: false
+                                  },
+                                  ticks: {
+                                      maxTicksLimit: 10,
+                                      fontSize: 14,
+                                      fontStyle: 'bold',
+                                      autoSkip: false,
+                                      maxRotation: 0,
+                                      minRotation: 0
+                                  },
+                                  barPercentage: 0.6,
+                                  categoryPercentage: 0.8
+                              }],
+                              yAxes: [{
+                                  ticks: {
+                                      beginAtZero: true,
+                                      max: 100,
+                                      maxTicksLimit: 5,
+                                      padding: 10,
+                                      callback: function(value) {
+                                          return value + '%';
+                                      },
+                                      fontSize: 12
+                                  },
+                                  gridLines: {
+                                      color: "rgb(234, 236, 244)",
+                                      zeroLineColor: "rgb(234, 236, 244)",
+                                      drawBorder: false,
+                                      borderDash: [2],
+                                      zeroLineBorderDash: [2]
+                                  }
+                              }],
+                          },
+                          legend: {
+                              display: false
+                          },
+                          tooltips: {
+                              titleMarginBottom: 10,
+                              titleFontColor: '#6e707e',
+                              titleFontSize: 14,
+                              backgroundColor: "rgb(255,255,255)",
+                              bodyFontColor: "#858796",
+                              borderColor: '#dddfeb',
+                              borderWidth: 1,
+                              xPadding: 15,
+                              yPadding: 15,
+                              displayColors: false,
+                              caretPadding: 10,
+                              callbacks: {
+                                  label: function(tooltipItem, chart) {
+                                      var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                      return datasetLabel + ': ' + tooltipItem.yLabel + '%';
+                                  }
+                              }
+                          },
+                          plugins: {
+                              datalabels: {
+                                  color: '#fff',
+                                  font: {
+                                      weight: 'bold',
+                                      size: 16
+                                  },
+                                  formatter: function(value) {
+                                      return value + '%';
+                                  }
+                              }
+                          }
+                      }
+                  });
+                  console.log("Chart created successfully");
+              } catch (error) {
+                  console.error("Error creating chart:", error);
+              }
+          }
+
+          createInitialBarChart(barChartData);
+      });
+</script>  
+<link href="css/sb-admin-2.min.css" rel="stylesheet" />
 
 </head>
 
@@ -29,14 +430,12 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
         <div class="sidebar-brand-text mx-3">
-          <img src="image/DICT-logo.png" alt="DICTlogo" style="max-width: 4rem; min-width: 5px" />
+          <img src="image/DICT-logo.png" alt="DICTlogo" style="max-width: 4rem; min-width: 1rem" />
         </div>
       </a>
 
       <!-- Divider -->
       <hr class="sidebar-divider my-0" />
-
-
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active dropdown no-arrow">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
@@ -85,182 +484,255 @@
         <!-- Topbar -->
         <nav class="navbar bg-body-tertiary topbar mb-2 static-top">
           <div class="container-fluid">
-            <h1 class="dashboard-title">Dashboard</h1>
+            <h1 class="dashboard-title">Hello Admin</h1>
             <a class="navbar-brand" href="#"></a>
+              <form id="dateRangeForm" method="POST">
+                  <div class="input-group mb-3">
+                      <input type="text" class="form-control datepicker" id="start_date" name="start_date" placeholder="Start Date" readonly>
+                      <input type="text" class="form-control datepicker" id="end_date" name="end_date" placeholder="End Date" readonly>
+                      <button class="btn btn-primary" type="submit">Apply Filter</button>
+                      <button class="btn btn-secondary" type="button" id="clearFilter">Clear Filter</button>
+                  </div>
+              </form>
           </div>
         </nav>
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
-          <!-- Content Row -->
-          <div class="row">
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Earnings (Monthly)
-                      </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        $40,000
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                        Earnings (Annual)
-                      </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        $215,000
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                        Tasks
-                      </div>
-                      <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                            50%
-                          </div>
+
+          <ul class="nav nav-tabs" id="resultTabs">
+            <li class="nav-item">
+              <a class="nav-link active" id="diagnostic-tab" data-toggle="tab" href="#diagnostic-results">Diagnostic Results</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="hands-on-tab" data-toggle="tab" href="#hands-on-results">Hands-On Results</a>
+            </li>
+          </ul>
+
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="diagnostic-results" role="tabpanel" aria-labelledby="diagnostic-tab">
+              <div class = "row">
+                  <!--Total Applicants -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Applicants
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <?php echo $total_count; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col">
-                          <div class="progress progress-sm mr-2">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50"
-                              aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+
+                  <!-- Passed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-success shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                          Passed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($passed_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
                           </div>
-                        </div>
                       </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <!-- Pending Requests Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                        Pending Requests
+
+                  <!-- Failed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-danger shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                          Failed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($failed_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        18
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-comments fa-2x text-gray-300"></i>
-                    </div>
                   </div>
-                </div>
+
+                  <!-- Pending Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-warning shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                          Pending Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($pending_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
               </div>
-            </div>
           </div>
+          <div class="tab-pane fade" id="hands-on-results" role="tabpanel" aria-labelledby="hands-on-tab">
+              <div class = "row">
+                  <!--Total Applicants -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Total Applicants
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <?php echo $total_count; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                  <!-- Passed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-success shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                          Passed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($passed_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+
+                  <!-- Failed Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-danger shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                          Failed Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($failed_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Pending Applicants Card -->
+                  <div class="col-xl-3 col-md-6 mb-4">
+                      <div class="card border-left-warning shadow h-100 py-2">
+                          <div class="card-body">
+                              <div class="row no-gutters align-items-center">
+                                  <div class="col mr-2">
+                                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                          Pending Applicants
+                                      </div>
+                                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                          <?php echo htmlspecialchars($pending_handson_count); ?>
+                                      </div>
+                                  </div>
+                                  <div class="col-auto">
+                                      <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
           <!-- Content Row -->
           <div class="row">
-            <!-- Area Chart -->
-            <div class="col-xl-8 col-lg-7">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">
-                    Earnings Overview
-                  </h6>
-                  <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                      aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                      aria-labelledby="dropdownMenuLink">
-                      <div class="dropdown-header">Dropdown Header:</div>
-                      <a class="dropdown-item" href="#">Action</a>
-                      <a class="dropdown-item" href="#">Another action</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                  </div>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                  <div class="chart-area">
-                    <canvas id="myAreaChart"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <!-- Pie Chart -->
-            <div class="col-xl-4 col-lg-5">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">
-                    Revenue Sources
-                  </h6>
-                  <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                      aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                      aria-labelledby="dropdownMenuLink">
-                      <div class="dropdown-header">Dropdown Header:</div>
-                      <a class="dropdown-item" href="#">Action</a>
-                      <a class="dropdown-item" href="#">Another action</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                  </div>
+          <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                  Applicant Status Distribution
+                </h6>
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                  <canvas id="myPieChart"></canvas>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                  <div class="chart-pie pt-4 pb-2">
-                    <canvas id="myPieChart"></canvas>
-                  </div>
                   <div class="mt-4 text-center small">
                     <span class="mr-2">
-                      <i class="fas fa-circle text-primary"></i> Direct
+                      <i class="fas fa-circle text-success"></i> <span id="passed-legend">Passed</span>
                     </span>
                     <span class="mr-2">
-                      <i class="fas fa-circle text-success"></i> Social
+                      <i class="fas fa-circle text-danger"></i> <span id="failed-legend">Failed</span>
                     </span>
                     <span class="mr-2">
-                      <i class="fas fa-circle text-info"></i> Referral
+                      <i class="fas fa-circle text-warning"></i> <span id="pending-legend">Pending</span>
                     </span>
                   </div>
-                </div>
               </div>
             </div>
           </div>
+            <!-- Bar Chart -->
+            <div class="col-xl-8 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Top 5 Provinces with Most Passers</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-bar">
+                            <canvas id="myBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- /.container-fluid -->
       </div>
@@ -274,22 +746,7 @@
     </a>
 
     <?php include ('logoutmodal.php'); ?>
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
 </body>
 
 </html>
