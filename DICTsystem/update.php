@@ -97,9 +97,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmtApplicantScore->bindParam(':handsonScore', $handsonScore);
         $stmtApplicantScore->bindParam(':applicantID', $applicantID);
 
-
-        // Execute update for applicantscore table
         $stmtApplicantScore->execute();
+
+        $exam_venue = $_POST['handson-exam_venue'];
+        $date_of_examination = $_POST['handson-date_of_examination'];
+        $date_of_notification = $_POST['handson-date_of_notification'];
+        $proctor = $_POST['handson-proctorName'];
+        $handson_status = $_POST['handson-status'];
+
+        $sql = "UPDATE applicanthandson 
+        SET exam_venue = :exam_venue, 
+            date_of_examination = :date_of_examination, 
+            date_of_notification = :date_of_notification, 
+            proctor = :proctor, 
+            handson_status = :handson_status 
+        WHERE applicantID = :applicantID";
+
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->bindParam(':applicantID', $last_applicant_ID);
+        $stmt->bindParam(':exam_venue', $exam_venue);
+        $stmt->bindParam(':date_of_examination', $date_of_examination);
+        $stmt->bindParam(':date_of_notification', $date_of_notification);
+        $stmt->bindParam(':proctor', $proctor);
+        $stmt->bindParam(':handson_status', $handson_status);
+
+        $stmt->execute();
+
         $editapplicant = $fname.' '.$mname.' '. $lname;
         include('addrecord.php');
         // Redirect back to the previous page with success message

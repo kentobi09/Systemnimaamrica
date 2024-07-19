@@ -353,149 +353,48 @@
       </div>
     </div>
     <div class="container px-0">
-      <div class="table-responsive">
-        <table class="table table-hover"> 
-                <thead>
-                <tr class="table-primary">
-                  <th scope="col" class="delete-column"></th>
-                  <th scope="col" class="sticky-id">ID</th>
-                  <th scope="col" class="sticky-name">Name</th>
-                  <th scope="col">Sex</th>
-                  <th scope="col">Province</th>
-                  <th scope="col">Date of Examination</th>
-                  <th scope="col">Exam Venue</th>
-                  <th scope="col">Date of Notification</th>
-                  <th class= "hide" scope="col" colspan="4" class="text-center">Score</th>
-                  <th scope="col">Proctor</th>
-                  <th scope="col">Status</th>
-                  <th class= "hide" scope="col">Email</th>
-                  <th class= "hide" scope="col">Contact Number</th>
-                  <th class= "hide" scope="col">Attached Form</th>
-                </tr>
-                <tr class= "hide" class="text-center table-primary">
-                  <th class= "hide" scope="col" class="delete-column"></th>
-                  <th class= "hide" scope="col" class="sticky-id"></th>
-                  <th class= "hide" scope="col" class="sticky-name"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col" class="align-top">Part 1</th>
-                  <th class= "hide" scope="col" class="align-top">Part 2</th>
-                  <th class= "hide" scope="col" class="align-top">Part 3</th>
-                  <th class= "hide" scope="col" class="align-top">Total Score</th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                  <th  class= "hide"scope="col"></th>
-                  <th class= "hide" scope="col"></th>
-                </tr>
-              </thead>
+    <ul class="nav nav-tabs" id="examTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="diagnostic-table-tab" data-toggle="tab" href="#diagnostic-table" role="tab" aria-controls="diagnostic-table" aria-selected="true">Diagnostic Table</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="hands-on-table-tab" data-toggle="tab" href="#hands-on-table" role="tab" aria-controls="hands-on-table" aria-selected="false">Hands-on Table</a>
+        </li>
+    </ul>
 
-        <tbody id = "applicant-table-body">
-            <?php if (!empty($applicant_record)): ?>
-            <?php foreach ($applicant_record as $applicant): ?>
-                <?php $hasApplicationForm = !empty($applicant['application_form']); ?>
-                <tr data-applicant-id="<?= $applicant['applicantID'] ?>">
-                    <td class="delete-column">
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button onclick="deletexid(<?php echo $applicant['applicantID'] ?>)" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteApplicantModal" data-applicantid="<?php echo $applicant['applicantID']; ?>">
-                                <i class="bi bi-trash"></i>
-                            </button>
+    <div class="tab-content mt-3" id="scoreTabsContent">
+        <!-- Diagnostic Score Tab -->
+        <div class="tab-pane fade show active" id="diagnostic-table" role="tabpanel" aria-labelledby="diagnostic-table-tab">
+            <?php include('tables/table1.php'); ?>
+        <!-- Hands-on Score Tab -->
+        <div class="tab-pane fade" id="hands-on-table" role="tabpanel" aria-labelledby="hands-on-table-tab">
+            <?php include('tables/table2.php'); ?>
+        </div>
+    </div>
+</div>
 
-                            <button class="btn btn-secondary edit-applicant-btn" type="button"
-                                    data-toggle="modal" data-target="#editApplicantModal"
-                                    data-id="<?php echo $applicant['applicantID']; ?>"
-                                    data-fname="<?php echo htmlspecialchars($applicant['firstname']); ?>"
-                                    data-mname="<?php echo htmlspecialchars($applicant['middlename']); ?>"
-                                    data-lname="<?php echo htmlspecialchars($applicant['lastname']); ?>"
-                                    data-sex="<?php echo htmlspecialchars($applicant['sex']); ?>"
-                                    data-province="<?php echo htmlspecialchars($applicant['province']); ?>"
-                                    data-contact="<?php echo htmlspecialchars($applicant['contact_number']); ?>"
-                                    data-email="<?php echo htmlspecialchars($applicant['email_address']); ?>"
-                                    data-notification="<?php echo htmlspecialchars($applicant['date_of_notification']); ?>"
-                                    data-exam-date="<?php echo htmlspecialchars($applicant['date_of_examination']); ?>"
-                                    data-exam-venue="<?php echo htmlspecialchars($applicant['exam_venue']); ?>"
-                                    data-proctor="<?php echo htmlspecialchars($applicant['proctor']); ?>"
-                                    data-status="<?php echo htmlspecialchars($applicant['status']); ?>"
-                                    <?php if (isset($scores[$applicant['applicantID']])): ?>
-                                        <?php $score = $scores[$applicant['applicantID']]; ?>
-                                        data-score1="<?php echo htmlspecialchars($score['score1']); ?>"
-                                        data-score2="<?php echo htmlspecialchars($score['score2']); ?>"
-                                        data-score3="<?php echo htmlspecialchars($score['score3']); ?>"
-                                        data-total="<?php echo htmlspecialchars($score['total']); ?>"
-                                        data-handson="<?php echo htmlspecialchars($score['hands_on']); ?>"
-                                    <?php else: ?>
-                                        data-score1=""
-                                        data-score2=""
-                                        data-score3=""
-                                        data-total=""
-                                    <?php endif; ?>
-                                    data-application-form="<?php echo !empty($applicant['application_form']); ?>">
-                                <i class="bi bi-pencil-square text-white"></i>
-                            </button>
-                        </div>
-                    </td>
-                    <td class="sticky-id applicant-id" ><?= htmlspecialchars($applicant['applicantID']) ?></td>
-                    <td class="sticky-name applicant-name">
-                      <?php ?>
-                          <?= htmlspecialchars($applicant['firstname'] . ' ' . strtoupper($applicant['middlename'][0]) . '. ' . $applicant['lastname']) ?>
-                    </td>
-                    <td class= "applicant-sex"              ><?= htmlspecialchars($applicant['sex']) ?></td>
-                    <td class= "applicant-province"         ><?= htmlspecialchars($applicant['province']) ?></td>
-                    <td class= "applicant-exam-date"        ><?= htmlspecialchars((new DateTime($applicant['date_of_examination']))->format('M d Y')) ?></td>
-                    <td class= "applicant-exam-venue"       ><?= htmlspecialchars($applicant['exam_venue']) ?></td>
-                    <td class= "applicant-notification-date"><?= htmlspecialchars((new DateTime($applicant['date_of_notification']))->format('M d Y')) ?></td>
 
-                    <?php if (isset($scores[$applicant['applicantID']])): ?>
-                        <?php $score = $scores[$applicant['applicantID']]; ?>
-                        <td class="score applicant-score1 hide"><?= htmlspecialchars($score['score1']) ?></td>
-                        <td class="score applicant-score2 hide"><?= htmlspecialchars($score['score2']) ?></td>
-                        <td class="score applicant-score3 hide"><?= htmlspecialchars($score['score3']) ?></td>
-                        <td class="score total-score hide" ><?= htmlspecialchars($score['total']) ?></td>
-                        <td class="score handson hide" ><?= htmlspecialchars($score['hands_on']) ?></td>
-                    <?php else: ?>
-                        <td colspan="4">No scores found</td>
-                    <?php endif; ?>
-
-                    <td class="proctor"       ><?= htmlspecialchars($applicant['proctor']) ?></td>
-                    <td class="status"        ><?= htmlspecialchars($applicant['status']) ?></td>
-                    <td class="email-address hide"><a href="mailto:<?= htmlspecialchars($applicant['email_address']) ?>"><?= htmlspecialchars($applicant['email_address']) ?></a></td>
-                    <td class="contact-number hide"> <?= htmlspecialchars($applicant['contact_number']) ?></td>
-                    <td class= "attachment hide" ><a target="_blank" href="applicant-form.php?id=<?= $applicant['applicantID'] ?>">attachment</a></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td class="delete-column">
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button class="btn btn-danger invisible" type="button" disabled><i class="bi bi-trash"></i></button>
-                            <button class="btn btn-secondary invisible" type="button" disabled><i class="bi bi-pencil-square text-white"></i></button>
-                        </div>
-                    </td>
-                    <td colspan="16" class="text-center">No records found.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-       </table>
-      </div>
-              
-       <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-md-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-md-center">
             <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= $page <= 1 ? '#' : '?' . http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>">Previous</a>
+                <a class="page-link" href="<?= $page <= 1 ? '#' : '?' . http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>">Previous</a>
             </li>
             <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-              <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"><?= $i ?></a>
-              </li>
+                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                    <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"><?= $i ?></a>
+                </li>
             <?php endfor; ?>
             <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
-              <a class="page-link" href="<?= $page >= $total_pages ? '#' : '?' . http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>">Next</a>
+                <a class="page-link" href="<?= $page >= $total_pages ? '#' : '?' . http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>">Next</a>
             </li>
-          </ul>
-        </nav>
-    </div>       
+        </ul>
+    </nav>
+</div>
+
   </body>
 </html>
+
+      <!-- <script src="vendor/jquery/jquery.min.js"></script>
+      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+      <script src="js/sb-admin-2.min.js"></script>               -->

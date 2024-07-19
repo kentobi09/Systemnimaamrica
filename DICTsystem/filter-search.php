@@ -89,4 +89,16 @@ if ($result) {
     echo "Error: " . mysqli_error($connection);
 }
 
+// Fetching applicanthandson data
+$queryHandson = "SELECT ah.*, ar.firstname, ar.lastname 
+                FROM applicanthandson AS ah
+                INNER JOIN applicantrecord AS ar ON ah.applicantID = ar.applicantID";
+$handsonResult = mysqli_query($connection, $queryHandson);
+
+if ($handsonResult) {
+    $applicanthandson = mysqli_fetch_all($handsonResult, MYSQLI_ASSOC);
+} else {
+    echo "Error fetching applicanthandson: " . mysqli_error($connection);
+}
+
 mysqli_close($connection);

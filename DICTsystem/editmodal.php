@@ -99,23 +99,23 @@
                         <div class="col-md-6 section">
                             <h4 class="section-title"><b>Score Details</b></h4>
                             <div class="form-group">
-                            <p class= "exam-subtitle"> Diagnostic Exam Part 1 </p>
+                            <p class= "exam-subtitle" id ="exam-subtitle1"> Diagnostic Exam Part 1 </p>
                                 <input type="text" class="form-control" id="edit-exam1Score" name="edit-exam1Score" placeholder="Exam 1" required>
                             </div>
                             <div class="form-group">
-                             <p class= "exam-subtitle"> Diagnostic Exam Part 2 </p>
+                             <p class= "exam-subtitle" id ="exam-subtitle2"> Diagnostic Exam Part 2 </p>
                                 <input type="text" class="form-control" id="edit-exam2Score" name="edit-exam2Score" placeholder="Exam 2" required>
                             </div>
-                            <div class="form-group">
-                             <p class= "exam-subtitle"> Diagnostic Exam Part 3 </p>
+                            <div class="form-group" >
+                             <p class= "exam-subtitle" id ="exam-subtitle3"> Diagnostic Exam Part 3 </p>
                                 <input type="text" class="form-control" id="edit-exam3Score" name="edit-exam3Score" placeholder="Exam 3" required>
                             </div>
                             <div class="form-group">
-                             <p class= "exam-subtitle"> Total Score </p>
+                             <p class= "exam-subtitle" id ="exam-subtitle4"> Total Score </p>
                                 <input type="text" class="form-control" id="edit-totalScore" name="edit-totalScore" placeholder="Total Score" readonly required>
                             </div>
                             <div class="form-group">
-                            <p class= "exam-subtitle"> Hands-on Score </p>
+                            <p class= "exam-subtitle" id ="exam-subtitle5"> Hands-on Score </p>
                                 <input type="text" class="form-control" id="edit-hands-on" name="edit-hands-on" placeholder="Hands-on Score">
                             </div>
 
@@ -181,33 +181,13 @@ document.getElementById('edit-hands-on').addEventListener('input', function (e) 
 });
 
     document.addEventListener('DOMContentLoaded', function () {
-        var editButtons = document.querySelectorAll('.edit-applicant-btn');
-
-        editButtons.forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                console.log('Clicked edit button:', btn);
-
-                var id = btn.getAttribute('data-id');
-                console.log('Applicant ID:', id);
-
-                var name = btn.getAttribute('data-name');
-                console.log('Name:', name);
-
-                // Output other data attributes for debugging
-
-                // Populate modal fields as before
-                // Ensure all fields are properly set based on the data retrieved
-            });
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
     // Find all edit buttons
     var editButtons = document.querySelectorAll('.edit-applicant-btn');
 
     // Attach click event listener to each edit button
     editButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
+           const isDiagnostic = btn.getAttribute('data-table-type') == 'diagnostic';
             // Get data attributes from the button
             var id = btn.getAttribute('data-id');
             var fname = btn.getAttribute('data-fname');
@@ -228,9 +208,17 @@ document.getElementById('edit-hands-on').addEventListener('input', function (e) 
             var totalScore = btn.getAttribute('data-total');
             var handson = btn.getAttribute('data-handson');
             var hasApplicationForm = btn.getAttribute('data-application-form') === 'true';
+            
+            var handsonExamDate = btn.getAttribute('data-handson-exam-date');
+            var handsonnotificationDate = btn.getAttribute('data-handson-notification');
+            var handsonstatus = btn.getAttribute('data-handson-status');
+            var handsonexamVenue = btn.getAttribute('data-handson-exam-venue');
+            var handsonproctor = btn.getAttribute('data-handson-proctor');
 
             // Populate modal fields with data
-            //------------------Modify here
+            //------------------Modify her
+
+
             document.getElementById('edit-applicantID').value = id;
             document.getElementById('edit-fname').value = fname;
             document.getElementById('edit-mname').value = mname;
@@ -239,11 +227,29 @@ document.getElementById('edit-hands-on').addEventListener('input', function (e) 
             document.getElementById('edit-province').value = province;
             document.getElementById('edit-contactNumber').value = contactNumber;
             document.getElementById('edit-emailAddress').value = emailAddress;
-            document.getElementById('edit-notificationDate').value = notificationDate;
-            document.getElementById('edit-examDate').value = examDate;
-            document.getElementById('edit-examVenue').value = examVenue;
-            document.getElementById('edit-proctor').value = proctor;
-            document.getElementById('edit-status').value = status;
+
+            document.getElementById('edit-notificationDate').value = isDiagnostic ? notificationDate : handsonnotificationDate;
+            document.getElementById('edit-examDate').value = isDiagnostic ? examDate : handsonExamDate;
+            document.getElementById('edit-examVenue').value = isDiagnostic ? examVenue : handsonexamVenue;
+            // document.getElementById('edit-proctor').value =  isDiagnostic ? proctor : handsonproctor;
+            // document.getElementById('edit-status').value = isDiagnostic ? status : handsonstatus;
+            document.getElementById('edit-proctor').value = isDiagnostic ? proctor : handsonproctor;
+            document.getElementById('edit-status').value =  isDiagnostic ? status : handsonstatus;
+
+
+
+            document.getElementById('edit-exam1Score').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('edit-exam2Score').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('edit-exam3Score').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('edit-totalScore').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('exam-subtitle1').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('exam-subtitle2').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('exam-subtitle3').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('exam-subtitle4').style.display = isDiagnostic ? 'block' : 'none';
+            document.getElementById('exam-subtitle5').style.display = !isDiagnostic ? 'block' : 'none';
+            document.getElementById('edit-hands-on').style.display = !isDiagnostic ? 'block' : 'none';
+
+
             document.getElementById('edit-exam1Score').value = score1;
             document.getElementById('edit-exam2Score').value = score2;
             document.getElementById('edit-exam3Score').value = score3;

@@ -20,7 +20,12 @@
             font-weight: 400;
         }
 
-
+        .hidden {
+    display: none;
+}
+        .show{
+            display: block;
+        }
     </style>
 </head>
 
@@ -60,25 +65,18 @@
                 <div class="row">
                     <!-- Score Details with Tabs -->
                     <div class="col-md-12">
-                        <ul class="nav nav-tabs" id="scoreTabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="diagnostic-tab" data-toggle="tab" href="#diagnostic" role="tab" aria-controls="diagnostic" aria-selected="true">Diagnostic Score</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="hands-on-tab" data-toggle="tab" href="#hands-on" role="tab" aria-controls="hands-on" aria-selected="false">Summary Score</a>
-                            </li>
-                        </ul>
+
                         <div class="tab-content mt-3" id="scoreTabsContent">
                             <!-- Diagnostic Score Tab -->
-                            <div class="tab-pane fade show active" id="diagnostic" role="tabpanel" aria-labelledby="diagnostic-tab">
                                 <div class="row">
                                     <!-- Diagnostic Score Details -->
                                     <div class="col-md-6">
-                                        <h4 class="section-title display-header"><b>Diagnostic Score Details</b></h4>
-                                        <p><strong>Score Part 1 :</strong> <span id="modal-score1"></span></p>
-                                        <p><strong>Score Part 2 :</strong> <span id="modal-score2"></span></p>
-                                        <p><strong id="score3-title">Score Part 3 :</strong> <span id="modal-score3"></span></p>
-                                        <p><strong>Total Score &nbsp;  :</strong> <span id="modal-totalScore"></span></p>
+                                        <h4 class="section-title display-header"><b id = "type-exam">Diagnostic Score Details</b></h4>
+                                        <p id = "d1"><strong>Score Part 1 :</strong> <span id="modal-score1"></span></p>
+                                        <p id = "d2"><strong>Score Part 2 :</strong> <span id="modal-score2"></span></p>
+                                        <p id = "d3"><strong id="score3-title">Score Part 3 :</strong> <span id="modal-score3"></span></p>
+                                        <p id = "d4"><strong>Total Score &nbsp;  :</strong> <span id="modal-totalScore"></span></p>
+                                        <p id ="h1"><strong>Hands-on Score &nbsp;:</strong> <span id="modal-hands-on-score2"></span></p>
                                     </div>
                                     <!-- Attached File -->
                                     <div class="col-md-6">
@@ -86,7 +84,6 @@
                                         <p><strong>Application Form:</strong> <a id="modal-applicationFormLink" href="#" target="_blank">View Attachment</a></p>
                                     </div>
                                 </div>
-                            </div>
                             <!-- Hands-on Score Tab -->
                             <div class="tab-pane fade" id="hands-on" role="tabpanel" aria-labelledby="hands-on-tab">
                                 <div class="row">
@@ -123,11 +120,11 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script> -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
+    
     var score1,score2,score3,total;
     document.addEventListener('DOMContentLoaded', function() {
-        const tableBody = document.getElementById('applicant-table-body');
-
-        tableBody.addEventListener('click', function(event) {
+        const tables = document.querySelectorAll('table');
+        tables.forEach(tableBody => tableBody.addEventListener('click', function(event) {
             // Check if the click was on an edit or delete button
             if (event.target.closest('.edit-applicant-btn') || event.target.closest('.btn-danger')) {
                 return; // Do nothing if clicked on an edit or delete button
@@ -141,13 +138,15 @@
                 return;
             }
 
+            const tableType = row.closest('table').getAttribute('data-table-type');
+            const isDiagnostic = tableType === 'diagnostic';
             // Extract data attributes from the row
             const applicantID = row.getAttribute('data-applicant-id');
             const name = row.cells[2].innerText.trim();
             const sex = row.cells[3].innerText.trim();
             const province = row.cells[4].innerText.trim();
-            const contact = row.cells[15].innerText.trim(); // Adjust based on your table structure
-            const email = row.cells[14].innerText.trim(); // Adjust based on your table structure
+            const contact = row.cells[16].innerText.trim(); // Adjust based on your table structure
+            const email = row.cells[15].innerText.trim(); // Adjust based on your table structure
             const notification = row.cells[7].innerText.trim(); // Assuming this is the date_of_notification
             const examDate = row.cells[5].innerText.trim(); // Assuming this is the date_of_examination
             const examVenue = row.cells[6].innerText.trim();
@@ -173,10 +172,36 @@
             document.getElementById('modal-examVenue').textContent = examVenue;
             document.getElementById('modal-proctor').textContent = proctor;
             document.getElementById('modal-status').textContent = status;
+            const elementIds = ['d1', 'd2', 'd3', 'd4'];
+            if(isDiagnostic){
             document.getElementById('modal-score1').textContent = score1;
             document.getElementById('modal-score2').textContent = score2;
             document.getElementById('modal-score3').textContent = score3;
             document.getElementById('modal-totalScore').textContent = total;
+            document.getElementById('modal-hands-on-score2').style.display = 'none';
+            document.getElementById('modal-score1').style.display= 'inline';
+            document.getElementById('modal-score2').style.display= 'inline';
+            document.getElementById('modal-score3').style.display= 'inline';
+            document.getElementById('modal-totalScore').style.display= 'inline';
+            document.getElementById('type-exam').textContent = 'Diagnostic Score Details';
+            elementIds.forEach(id => {
+            document.getElementById(id).style.display = 'block';
+            });
+            document.getElementById('h1').style.display = 'none';
+            }
+            else{
+            document.getElementById('h1').style.display = 'block';
+            elementIds.forEach(id => {
+            document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('modal-hands-on-score2').style.display = 'inline';
+            document.getElementById('modal-score1').style.display= 'none';
+            document.getElementById('modal-score2').style.display= 'none';
+            document.getElementById('modal-score3').style.display= 'none';
+            document.getElementById('modal-totalScore').style.display= 'none';
+            document.getElementById('type-exam').textContent = 'Hands-on Score Details';
+            }
+
             document.getElementById('modal-applicationFormLink').setAttribute('href', attachmentLink);
             if (handson.trim() === '') {handson =0;}
             document.getElementById('modal-hands-on-score1').textContent = total;
@@ -185,40 +210,6 @@
             // Open the modal
             const modal = new bootstrap.Modal(document.getElementById('applicantModal'));
             modal.show();
-        });
+        }));
     });
-
-
-
-//     document.addEventListener('DOMContentLoaded', function() {
-//     var showHandsOnButton = document.getElementById('showHandsOnButton');
-//     var scoresVisible = false; // Variable to track visibility state
-
-//     showHandsOnButton.addEventListener('click', function() {
-//         // Toggle visibility of score elements
-//         if (scoresVisible) {
-//             // Hide scores
-//             document.getElementById('remove').style.display = 'inline'; 
-//             document.getElementById('modal-score3').style.display = 'inline'; 
-//             document.getElementById('modal-score1').textContent = score1;
-//             document.getElementById('modal-score2').textContent = score2;
-//             document.getElementById('modal-score3').textContent = score3;
-//             document.getElementById('modal-totalScore').textContent =total;
-
-//             document.getElementById('change-title').textContent = 'Score Details';
-//         } else {
-//             // Show scores
-//             document.getElementById('remove').style.display = 'none'; 
-//             document.getElementById('modal-score3').style.display = 'none'; 
-//             document.getElementById('modal-score1').textContent = 1;
-//             document.getElementById('modal-score2').textContent = 2;
-//             document.getElementById('change-title').textContent = 'Summary Score';
-//         }
-
-//         // Toggle the state
-//         scoresVisible = !scoresVisible;
-//     });
-// });
-
-
 </script>

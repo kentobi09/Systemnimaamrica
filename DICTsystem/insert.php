@@ -60,23 +60,48 @@ try {
         $applicant_score_part1 = trim(htmlspecialchars($_POST['exam1Score']));
         $applicant_score_part2 = trim(htmlspecialchars($_POST['exam2Score']));
         $applicant_score_part3 = trim(htmlspecialchars($_POST['exam3Score']));
-        $hands_on = trim(htmlspecialchars($_POST['hands-onScore']));
+        $handson_score = trim(htmlspecialchars($_POST['add-handsonscore']));
         $sum = $applicant_score_part1 + $applicant_score_part2 + $applicant_score_part3;
 
-        $sql = "INSERT INTO applicantscore (applicantID, applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score, handson_score)
-                VALUES (:applicant_ID, :applicant_score_part1, :applicant_score_part2, :applicant_score_part3, :total_score, :handson_score)";
+        $sql = "INSERT INTO applicantscore (applicantID, applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score,handson_score)
+                VALUES (:applicant_ID, :applicant_score_part1, :applicant_score_part2, :applicant_score_part3, :total_score,:handson_score)";
         
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':applicant_ID', $last_applicant_ID);
         $stmt->bindParam(':applicant_score_part1', $applicant_score_part1);
         $stmt->bindParam(':applicant_score_part2', $applicant_score_part2);
         $stmt->bindParam(':applicant_score_part3', $applicant_score_part3);
-        $stmt->bindParam(':handson_score', $hands_on);
         $stmt->bindParam(':total_score', $sum);
+        $stmt->bindParam(':handson_score', $handson_score);
         
         if (!$stmt->execute()) {
             throw new Exception("Failed to insert applicant score: " . implode(", ", $stmt->errorInfo()));
         }
+
+        $exam_venue = $_POST['handson-exam_venue'];
+        $date_of_examination = $_POST['handson-date_of_examination'];
+        $date_of_notification = $_POST['handson-date_of_notification'];
+        $proctor = $_POST['handson-proctorName'];
+        $handson_status = $_POST['handson-status'];
+
+        
+        // Prepare an SQL statement to insert data into the applicanthandson table
+        $sql = "INSERT INTO applicanthandson (applicantID, exam_venue, date_of_examination, date_of_notification, proctor, handson_status) 
+                VALUES (:applicantID, :exam_venue, :date_of_examination, :date_of_notification, :proctor, :handson_status)";
+
+        // Prepare the statement
+        $stmt = $conn->prepare($sql);
+
+        // Bind parameters
+        $stmt->bindParam(':applicantID', $last_applicant_ID);
+        $stmt->bindParam(':exam_venue', $exam_venue);
+        $stmt->bindParam(':date_of_examination', $date_of_examination);
+        $stmt->bindParam(':date_of_notification', $date_of_notification);
+        $stmt->bindParam(':proctor', $proctor);
+        $stmt->bindParam(':handson_status', $handson_status);
+
+        // Execute the statement
+        $stmt->execute();
 
         $conn->commit();
         $addapplicant=$firstname.' '.$middlename.' '.$lastname;
