@@ -151,17 +151,18 @@
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                 </div>
-                            </form>
+                            </form> 
                         </div>
                     </div>
 
                     <!-- Hands-on Exam Tab -->
                     <div class="tab-pane fade" id="handson" role="tabpanel" aria-labelledby="hands-on-tab">
+                        <form method="post" action="hands-on-insert.php" enctype="multipart/form-data">
                             <div class="row">
-                            <form method="post" action="insert.php" enctype="multipart/form-data">  
+                                <!-- Left column for Hands-on Examination Details -->
                                 <div class="col-md-6 section">
                                 <div class="form-group">
-                                            <input type="search" class="form-control" id="add-ID" name="add-ID" placeholder="Search by Id" autocomplete="off" >
+                                            <input type="search" class="form-control" id="add-ID" name="add-ID" placeholder="Input Id or Name" autocomplete="off" >
                                         </div>
                                         <h4 class="section-title"><b>Examination Details</b></h4>
                                         <div class="form-group">

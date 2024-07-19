@@ -43,6 +43,7 @@
           failed_handson_count: <?php echo json_encode($failed_handson_count); ?>,
           pending_handson_count: <?php echo json_encode($pending_handson_count); ?>,
           total_count: <?php echo json_encode($total_count); ?>
+          
         };
         
         
@@ -202,6 +203,7 @@
 
         function updateCards(containerId, total, passed, failed, pending) {
           var container = $('#' + containerId);
+          //change here
           container.find('.card:eq(0) .h5').text(total);
           container.find('.card:eq(1) .h5').text(passed);
           container.find('.card:eq(2) .h5').text(failed);

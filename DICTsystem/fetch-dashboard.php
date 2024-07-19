@@ -14,6 +14,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $base_query = "SELECT COUNT(*) as count FROM applicantrecord";
+    $base_query_handson = "SELECT COUNT(*) as count FROM applicanthandson";
     $date_condition = "";
     if ($start_date && $end_date) {
         $date_condition = " WHERE date_of_examination BETWEEN :start_date AND :end_date";
@@ -47,14 +48,17 @@ try {
     $pending_query = $base_query . $date_condition . ($date_condition ? " AND" : " WHERE") . " status = 'pending'";
     $pending_count = executeQuery($pdo, $pending_query, $query_params);
 
+
+    $total_query = $base_query_handson . $date_condition;
+    $total_count_handson = executeQuery($pdo, $total_query, $query_params);
     // Hands-on test results
-    $passed_handson_query = $base_query . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'passed'";
+    $passed_handson_query = $base_query_handson . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'passed'";
     $passed_handson_count = executeQuery($pdo, $passed_handson_query, $query_params);
 
-    $failed_handson_query = $base_query . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'failed'";
+    $failed_handson_query = $base_query_handson . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'failed'";
     $failed_handson_count = executeQuery($pdo, $failed_handson_query, $query_params);
 
-    $pending_handson_query = $base_query . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'pending'";
+    $pending_handson_query = $base_query_handson . $date_condition . ($date_condition ? " AND" : " WHERE") . " handson_status = 'pending'";
     $pending_handson_count = executeQuery($pdo, $pending_handson_query, $query_params);
 
 
