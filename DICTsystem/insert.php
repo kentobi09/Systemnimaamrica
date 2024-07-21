@@ -7,12 +7,27 @@ try {
     $conn->setAttribute(PDO::ATTR_TIMEOUT, 300); // 5 minutes
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $conn->beginTransaction();
-        
-        // Applicant record insertion
         $firstname = trim(htmlspecialchars($_POST['firstname']));
         $middlename = trim(htmlspecialchars($_POST['middlename']));
         $lastname = trim(htmlspecialchars($_POST['lastname']));
+        
+        // Check if the applicant already exists
+        $sql = "SELECT COUNT(*) FROM applicantrecord WHERE firstname = :firstname AND middlename = :middlename AND lastname = :lastname";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':firstname', $firstname);
+        $stmt->bindParam(':middlename', $middlename);
+        $stmt->bindParam(':lastname', $lastname);
+        $stmt->execute();
+        $count = $stmt->fetchColumn();
+        
+        if ($count > 0) {
+            echo "<script>alert('An applicant with the same name already exists.'); window.history.back();</script>";
+            exit();
+        }
+        
+        $conn->beginTransaction();
+        
+        // Applicant record insertion
         $sex = trim(htmlspecialchars($_POST['sex']));
         $province = trim(htmlspecialchars($_POST['province']));
         $exam_venue = trim(htmlspecialchars($_POST['exam_venue']));
@@ -60,11 +75,10 @@ try {
         $applicant_score_part1 = trim(htmlspecialchars($_POST['exam1Score']));
         $applicant_score_part2 = trim(htmlspecialchars($_POST['exam2Score']));
         $applicant_score_part3 = trim(htmlspecialchars($_POST['exam3Score']));
-        $handson_score = trim(htmlspecialchars($_POST['add-handsonscore']));
         $sum = $applicant_score_part1 + $applicant_score_part2 + $applicant_score_part3;
 
-        $sql = "INSERT INTO applicantscore (applicantID, applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score,handson_score)
-                VALUES (:applicant_ID, :applicant_score_part1, :applicant_score_part2, :applicant_score_part3, :total_score,:handson_score)";
+        $sql = "INSERT INTO applicantscore (applicantID, applicant_score_part1, applicant_score_part2, applicant_score_part3, total_score)
+                VALUES (:applicant_ID, :applicant_score_part1, :applicant_score_part2, :applicant_score_part3, :total_score)";
         
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':applicant_ID', $last_applicant_ID);
@@ -72,39 +86,13 @@ try {
         $stmt->bindParam(':applicant_score_part2', $applicant_score_part2);
         $stmt->bindParam(':applicant_score_part3', $applicant_score_part3);
         $stmt->bindParam(':total_score', $sum);
-        $stmt->bindParam(':handson_score', $handson_score);
         
         if (!$stmt->execute()) {
             throw new Exception("Failed to insert applicant score: " . implode(", ", $stmt->errorInfo()));
         }
-
-        $exam_venue = $_POST['handson-exam_venue'];
-        $date_of_examination = $_POST['handson-date_of_examination'];
-        $date_of_notification = $_POST['handson-date_of_notification'];
-        $proctor = $_POST['handson-proctorName'];
-        $handson_status = $_POST['handson-status'];
-
         
-        // Prepare an SQL statement to insert data into the applicanthandson table
-        $sql = "INSERT INTO applicanthandson (applicantID, exam_venue, date_of_examination, date_of_notification, proctor, handson_status) 
-                VALUES (:applicantID, :exam_venue, :date_of_examination, :date_of_notification, :proctor, :handson_status)";
-
-        // Prepare the statement
-        $stmt = $conn->prepare($sql);
-
-        // Bind parameters
-        $stmt->bindParam(':applicantID', $last_applicant_ID);
-        $stmt->bindParam(':exam_venue', $exam_venue);
-        $stmt->bindParam(':date_of_examination', $date_of_examination);
-        $stmt->bindParam(':date_of_notification', $date_of_notification);
-        $stmt->bindParam(':proctor', $proctor);
-        $stmt->bindParam(':handson_status', $handson_status);
-
-        // Execute the statement
-        $stmt->execute();
-
         $conn->commit();
-        $addapplicant=$firstname.' '.$middlename.' '.$lastname;
+        $addapplicant = $firstname.' '.$middlename.' '.$lastname;
         include('addrecord.php');
 
         header("Location: table-records.php");

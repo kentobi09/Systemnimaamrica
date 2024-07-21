@@ -50,6 +50,5 @@ while ($row_applicantID = $result_applicantIDs->fetch_assoc()) {
     }
     $stmt_scores->close();
 }
+
 $conn->close();
-
-
