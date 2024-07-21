@@ -1,5 +1,6 @@
-  <?php include('fetch-dashboard.php');
-  include('display-bar.php');
+  <?php
+  include "fetch-dashboard.php";
+  include "display-bar.php";
   $initial_passed = isset($passed_count) ? $passed_count : 0;
   $initial_failed = isset($failed_count) ? $failed_count : 0;
   $initial_pending = isset($pending_count) ? $pending_count : 0;
@@ -26,7 +27,7 @@
   <script src="js/sb-admin-2.min.js"></script>
   <script src="vendor/chart.js/Chart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
-  <!-- JS for Pie Chart & FIlter Function-->
+  <!-- JS for Pie Chart & Filter Function-->
   <script>
 
         var initialData = {
@@ -39,34 +40,40 @@
           passed_count: <?php echo json_encode($passed_count); ?>,
           failed_count: <?php echo json_encode($failed_count); ?>,
           pending_count: <?php echo json_encode($pending_count); ?>,
-          passed_handson_count: <?php echo json_encode($passed_handson_count); ?>,
-          failed_handson_count: <?php echo json_encode($failed_handson_count); ?>,
-          pending_handson_count: <?php echo json_encode($pending_handson_count); ?>,
+          passed_handson_count: <?php echo json_encode(
+              $passed_handson_count
+          ); ?>,
+          failed_handson_count: <?php echo json_encode(
+              $failed_handson_count
+          ); ?>,
+          pending_handson_count: <?php echo json_encode(
+              $pending_handson_count
+          ); ?>,
           total_count: <?php echo json_encode($total_count); ?>
         };
-        
-        
+
+
         $(document).ready(function() {
-            
+
           $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true
           });
 
-          
+
           $('#resultTabs a').on('click', function(e) {
             e.preventDefault();
             $(this).tab('show');
           });
 
-          
+
           $('#resultTabs a').on('shown.bs.tab', function(e) {
             var activeTabId = $(e.target).attr('id');
             updateCardsByTab(activeTabId);
             updatePieChartByTab(activeTabId);
           });
 
-          
+
           $('#dateRangeForm').on('submit', function(e) {
               e.preventDefault();
               $.ajax({
@@ -75,7 +82,7 @@
                   data: $(this).serialize(),
                   dataType: 'json',
                   success: function(response) {
-                      console.log(response); 
+                      console.log(response);
                       updateDashboard(response);
                       updatePieChartByTab($('#resultTabs .active').attr('id'));
                   },
@@ -89,7 +96,7 @@
         // Clear the date inputs
         $('#start_date').val('');
         $('#end_date').val('');
-        
+
         // Reset the dashboard data
         $.ajax({
             url: 'fetch-dashboard.php',
@@ -211,21 +218,21 @@
         function updatePieChart(passed, failed, pending) {
           if (window.myPieChart) {
             console.log("Updating pie chart with raw data:", [passed, failed, pending]);
-            
-            
+
+
             passed = Number(passed) || 0;
             failed = Number(failed) || 0;
             pending = Number(pending) || 0;
 
-          
+
             var total = passed + failed + pending;
-            
+
             if (total === 0) {
               console.warn("Total is zero, cannot calculate percentages");
               return;
             }
 
-            
+
             window.myPieChart.data.datasets[0].data = [passed, failed, pending];
             window.myPieChart.options.plugins.datalabels.formatter = (value, ctx) => {
               let sum = 0;
@@ -238,7 +245,7 @@
             };
             window.myPieChart.update();
 
-            
+
             updateLegend(passed, failed, pending);
 
             console.log("Updated pie chart with data:", [passed, failed, pending]);
@@ -258,7 +265,7 @@
             updatePieChart(data.passed_handson_count, data.failed_handson_count, data.pending_handson_count);
           }
         }
-        
+
         function updateLegend(passed, failed, pending) {
           var total = passed + failed + pending;
           if (total === 0) {
@@ -267,7 +274,7 @@
             $('#pending-legend').text('Pending (0%)');
             return;
           }
-          
+
           var passedPercentage = ((passed / total) * 100).toFixed(1);
           var failedPercentage = ((failed / total) * 100).toFixed(1);
           var pendingPercentage = ((pending / total) * 100).toFixed(1);
@@ -280,144 +287,149 @@
         function logDashboardData() {
         console.log("Current dashboard data:", window.dashboardData);
         }
- 
   </script>
+
   <!-- JS for Bar Chart-->
- <script>
+  <script>
       var barChartData = <?php echo $json_data; ?>;
       console.log("Bar Chart Data:", barChartData);
-
       document.addEventListener('DOMContentLoaded', function() {
           var ctx = document.getElementById("myBarChart");
-          
           if (!ctx) {
               console.error("Canvas element 'myBarChart' not found!");
               return;
           }
-          
           ctx = ctx.getContext('2d');
           var myBarChart;
-
-          function createInitialBarChart(data) {
+          function createBarChart(data) {
               if (!Array.isArray(data) || data.length === 0) {
                   console.error("Invalid or empty data received:", data);
                   return;
               }
-
               // Calculate total passers
               var totalPassers = data.reduce((sum, item) => sum + (parseInt(item.passer_count) || 0), 0);
-
-              var initialData = {
-                  labels: data.map(item => item.province),
-                  datasets: [{
-                      label: "Passers (%)",
-                      backgroundColor: 'rgba(54, 162, 235, 0.8)', // All bars in blue
-                      borderColor: 'rgba(54, 162, 235, 1)',
-                      borderWidth: 1,
-                      data: data.map(item => {
-                          var passerCount = parseInt(item.passer_count) || 0;
-                          return ((passerCount / totalPassers) * 100).toFixed(2);
-                      }),
-                  }]
+              var chartData = {
+                labels: data.map(item => item.province),
+                datasets: [{
+                  label: "Passers (%)",
+                  backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1,
+                  data: data.map(item => {
+                    var passerCount = parseInt(item.passer_count) || 0;
+                    return ((passerCount / totalPassers) * 100).toFixed(2);
+                  }),
+                }]
               };
-
-              try {
-                  myBarChart = new Chart(ctx, {
-                      type: 'bar',
-                      data: initialData,
-                      options: {
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          layout: {
-                              padding: {
-                                  left: 10,
-                                  right: 25,
-                                  top: 25,
-                                  bottom: 0
-                              }
+              var chartOptions = {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  layout: {
+                      padding: {
+                          left: 10,
+                          right: 25,
+                          top: 25,
+                          bottom: 0
+                      }
+                  },
+                  scales: {
+                      xAxes: [{
+                          gridLines: {
+                              display: false,
+                              drawBorder: false
                           },
-                          scales: {
-                              xAxes: [{
-                                  gridLines: {
-                                      display: false,
-                                      drawBorder: false
-                                  },
-                                  ticks: {
-                                      maxTicksLimit: 10,
-                                      fontSize: 14,
-                                      fontStyle: 'bold',
-                                      autoSkip: false,
-                                      maxRotation: 0,
-                                      minRotation: 0
-                                  },
-                                  barPercentage: 0.6,
-                                  categoryPercentage: 0.8
-                              }],
-                              yAxes: [{
-                                  ticks: {
-                                      beginAtZero: true,
-                                      max: 100,
-                                      maxTicksLimit: 5,
-                                      padding: 10,
-                                      callback: function(value) {
-                                          return value + '%';
-                                      },
-                                      fontSize: 12
-                                  },
-                                  gridLines: {
-                                      color: "rgb(234, 236, 244)",
-                                      zeroLineColor: "rgb(234, 236, 244)",
-                                      drawBorder: false,
-                                      borderDash: [2],
-                                      zeroLineBorderDash: [2]
-                                  }
-                              }],
+                          ticks: {
+                              maxTicksLimit: 10,
+                              fontSize: 14,
+                              fontStyle: 'bold',
+                              autoSkip: false,
+                              maxRotation: 0,
+                              minRotation: 0
                           },
-                          legend: {
-                              display: false
+                          barPercentage: 0.6,
+                          categoryPercentage: 0.8
+                      }],
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              max: 100,
+                              maxTicksLimit: 5,
+                              padding: 10,
+                              callback: function(value) {
+                                  return value + '%';
+                              },
+                              fontSize: 12
                           },
-                          tooltips: {
-                              titleMarginBottom: 10,
-                              titleFontColor: '#6e707e',
-                              titleFontSize: 14,
-                              backgroundColor: "rgb(255,255,255)",
-                              bodyFontColor: "#858796",
-                              borderColor: '#dddfeb',
-                              borderWidth: 1,
-                              xPadding: 15,
-                              yPadding: 15,
-                              displayColors: false,
-                              caretPadding: 10,
-                              callbacks: {
-                                  label: function(tooltipItem, chart) {
-                                      var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                                      return datasetLabel + ': ' + tooltipItem.yLabel + '%';
-                                  }
-                              }
-                          },
-                          plugins: {
-                              datalabels: {
-                                  color: '#fff',
-                                  font: {
-                                      weight: 'bold',
-                                      size: 16
-                                  },
-                                  formatter: function(value) {
-                                      return value + '%';
-                                  }
-                              }
+                          gridLines: {
+                              color: "rgb(234, 236, 244)",
+                              zeroLineColor: "rgb(234, 236, 244)",
+                              drawBorder: false,
+                              borderDash: [2],
+                              zeroLineBorderDash: [2]
+                          }
+                      }],
+                  },
+                  legend: {
+                      display: false
+                  },
+                  tooltips: {
+                      titleMarginBottom: 10,
+                      titleFontColor: '#6e707e',
+                      titleFontSize: 14,
+                      backgroundColor: "rgb(255,255,255)",
+                      bodyFontColor: "#858796",
+                      borderColor: '#dddfeb',
+                      borderWidth: 1,
+                      xPadding: 15,
+                      yPadding: 15,
+                      displayColors: false,
+                      caretPadding: 10,
+                      callbacks: {
+                          label: function(tooltipItem, chart) {
+                              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                              return datasetLabel + ': ' + tooltipItem.yLabel + '%';
                           }
                       }
+                  },
+                  plugins: {
+                      datalabels: {
+                          color: '#fff',
+                          font: {
+                              weight: 'bold',
+                              size: 16
+                          },
+                          formatter: function(value) {
+                              return value + '%';
+                          },
+                          anchor: 'center',
+                          align: 'center',
+                          offset: 0
+                      }
+                  }
+              };
+              if (myBarChart) {
+                  myBarChart.data = chartData;
+                  myBarChart.options = chartOptions;
+                  myBarChart.update();
+              } else {
+                  myBarChart = new Chart(ctx, {
+                      type: 'bar',
+                      data: chartData,
+                      options: chartOptions
                   });
-                  console.log("Chart created successfully");
-              } catch (error) {
-                  console.error("Error creating chart:", error);
               }
           }
 
-          createInitialBarChart(barChartData);
+          createBarChart(barChartData.diagnostic);
+
+          document.getElementById('diagnostic-tab').addEventListener('click', function() {
+              createBarChart(barChartData.diagnostic);
+          });
+          document.getElementById('hands-on-tab').addEventListener('click', function() {
+              createBarChart(barChartData.handson);
+          });
       });
-</script>  
+  </script>
 <link href="css/sb-admin-2.min.css" rel="stylesheet" />
 
 </head>
@@ -544,7 +556,9 @@
                                           Passed Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($passed_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $passed_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -565,7 +579,9 @@
                                           Failed Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($failed_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $failed_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -586,7 +602,9 @@
                                           Pending Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($pending_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $pending_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -631,7 +649,9 @@
                                           Passed Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($passed_handson_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $passed_handson_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -653,7 +673,9 @@
                                           Failed Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($failed_handson_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $failed_handson_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -674,7 +696,9 @@
                                           Pending Applicants
                                       </div>
                                       <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                          <?php echo htmlspecialchars($pending_handson_count); ?>
+                                          <?php echo htmlspecialchars(
+                                              $pending_handson_count
+                                          ); ?>
                                       </div>
                                   </div>
                                   <div class="col-auto">
@@ -745,7 +769,7 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
-    <?php include ('logoutmodal.php'); ?>
+    <?php include "logoutmodal.php"; ?>
 
 </body>
 
